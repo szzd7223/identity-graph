@@ -18,6 +18,7 @@ model Profile {
   website     String?
   github      String?
   linkedin    String?
+  theme       String       @default("minimalist")
   experiences Experience[]
   education   Education[]
   projects    Project[]

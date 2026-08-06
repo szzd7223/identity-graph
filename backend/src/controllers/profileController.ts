@@ -33,7 +33,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 
 // Create a new profile
 export const createProfile = async (req: Request, res: Response): Promise<void> => {
-  const { username, fullName, title, bio, email, phone, website, github, linkedin } = req.body;
+  const { username, fullName, title, bio, email, phone, website, github, linkedin, theme } = req.body;
 
   if (!username || !fullName || !title) {
     res.status(400).json({ error: "Username, full name, and title are required fields." });
@@ -57,7 +57,8 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
         phone,
         website,
         github,
-        linkedin
+        linkedin,
+        theme: theme || "minimalist"
       }
     });
 
@@ -70,7 +71,7 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
 // Update profile details
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   const { username } = req.params as { username: string };
-  const { fullName, title, bio, email, phone, website, github, linkedin } = req.body;
+  const { fullName, title, bio, email, phone, website, github, linkedin, theme } = req.body;
 
   try {
     const profile = await prisma.profile.update({
@@ -83,7 +84,8 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         phone,
         website,
         github,
-        linkedin
+        linkedin,
+        theme
       }
     });
 

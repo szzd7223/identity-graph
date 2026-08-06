@@ -1336,6 +1336,7 @@ export namespace Prisma {
     website: string | null
     github: string | null
     linkedin: string | null
+    theme: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1351,6 +1352,7 @@ export namespace Prisma {
     website: string | null
     github: string | null
     linkedin: string | null
+    theme: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1366,6 +1368,7 @@ export namespace Prisma {
     website: number
     github: number
     linkedin: number
+    theme: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1383,6 +1386,7 @@ export namespace Prisma {
     website?: true
     github?: true
     linkedin?: true
+    theme?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1398,6 +1402,7 @@ export namespace Prisma {
     website?: true
     github?: true
     linkedin?: true
+    theme?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1413,6 +1418,7 @@ export namespace Prisma {
     website?: true
     github?: true
     linkedin?: true
+    theme?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1501,6 +1507,7 @@ export namespace Prisma {
     website: string | null
     github: string | null
     linkedin: string | null
+    theme: string
     createdAt: Date
     updatedAt: Date
     _count: ProfileCountAggregateOutputType | null
@@ -1533,6 +1540,7 @@ export namespace Prisma {
     website?: boolean
     github?: boolean
     linkedin?: boolean
+    theme?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     experiences?: boolean | Profile$experiencesArgs<ExtArgs>
@@ -1553,6 +1561,7 @@ export namespace Prisma {
     website?: boolean
     github?: boolean
     linkedin?: boolean
+    theme?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["profile"]>
@@ -1568,6 +1577,7 @@ export namespace Prisma {
     website?: boolean
     github?: boolean
     linkedin?: boolean
+    theme?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["profile"]>
@@ -1583,11 +1593,12 @@ export namespace Prisma {
     website?: boolean
     github?: boolean
     linkedin?: boolean
+    theme?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "fullName" | "title" | "bio" | "email" | "phone" | "website" | "github" | "linkedin" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "fullName" | "title" | "bio" | "email" | "phone" | "website" | "github" | "linkedin" | "theme" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     experiences?: boolean | Profile$experiencesArgs<ExtArgs>
     education?: boolean | Profile$educationArgs<ExtArgs>
@@ -1617,6 +1628,7 @@ export namespace Prisma {
       website: string | null
       github: string | null
       linkedin: string | null
+      theme: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["profile"]>
@@ -2056,6 +2068,7 @@ export namespace Prisma {
     readonly website: FieldRef<"Profile", 'String'>
     readonly github: FieldRef<"Profile", 'String'>
     readonly linkedin: FieldRef<"Profile", 'String'>
+    readonly theme: FieldRef<"Profile", 'String'>
     readonly createdAt: FieldRef<"Profile", 'DateTime'>
     readonly updatedAt: FieldRef<"Profile", 'DateTime'>
   }
@@ -6894,6 +6907,7 @@ export namespace Prisma {
     website: 'website',
     github: 'github',
     linkedin: 'linkedin',
+    theme: 'theme',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7037,6 +7051,7 @@ export namespace Prisma {
     website?: StringNullableFilter<"Profile"> | string | null
     github?: StringNullableFilter<"Profile"> | string | null
     linkedin?: StringNullableFilter<"Profile"> | string | null
+    theme?: StringFilter<"Profile"> | string
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     experiences?: ExperienceListRelationFilter
@@ -7056,6 +7071,7 @@ export namespace Prisma {
     website?: SortOrderInput | SortOrder
     github?: SortOrderInput | SortOrder
     linkedin?: SortOrderInput | SortOrder
+    theme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     experiences?: ExperienceOrderByRelationAggregateInput
@@ -7078,6 +7094,7 @@ export namespace Prisma {
     website?: StringNullableFilter<"Profile"> | string | null
     github?: StringNullableFilter<"Profile"> | string | null
     linkedin?: StringNullableFilter<"Profile"> | string | null
+    theme?: StringFilter<"Profile"> | string
     createdAt?: DateTimeFilter<"Profile"> | Date | string
     updatedAt?: DateTimeFilter<"Profile"> | Date | string
     experiences?: ExperienceListRelationFilter
@@ -7097,6 +7114,7 @@ export namespace Prisma {
     website?: SortOrderInput | SortOrder
     github?: SortOrderInput | SortOrder
     linkedin?: SortOrderInput | SortOrder
+    theme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProfileCountOrderByAggregateInput
@@ -7118,6 +7136,7 @@ export namespace Prisma {
     website?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     github?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     linkedin?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    theme?: StringWithAggregatesFilter<"Profile"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
   }
@@ -7373,6 +7392,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceCreateNestedManyWithoutProfileInput
@@ -7392,6 +7412,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceUncheckedCreateNestedManyWithoutProfileInput
@@ -7411,6 +7432,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUpdateManyWithoutProfileNestedInput
@@ -7430,6 +7452,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUncheckedUpdateManyWithoutProfileNestedInput
@@ -7449,6 +7472,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7464,6 +7488,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7479,6 +7504,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7828,6 +7854,7 @@ export namespace Prisma {
     website?: SortOrder
     github?: SortOrder
     linkedin?: SortOrder
+    theme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7843,6 +7870,7 @@ export namespace Prisma {
     website?: SortOrder
     github?: SortOrder
     linkedin?: SortOrder
+    theme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7858,6 +7886,7 @@ export namespace Prisma {
     website?: SortOrder
     github?: SortOrder
     linkedin?: SortOrder
+    theme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8597,6 +8626,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     education?: EducationCreateNestedManyWithoutProfileInput
@@ -8615,6 +8645,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     education?: EducationUncheckedCreateNestedManyWithoutProfileInput
@@ -8649,6 +8680,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     education?: EducationUpdateManyWithoutProfileNestedInput
@@ -8667,6 +8699,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     education?: EducationUncheckedUpdateManyWithoutProfileNestedInput
@@ -8685,6 +8718,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceCreateNestedManyWithoutProfileInput
@@ -8703,6 +8737,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceUncheckedCreateNestedManyWithoutProfileInput
@@ -8737,6 +8772,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUpdateManyWithoutProfileNestedInput
@@ -8755,6 +8791,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUncheckedUpdateManyWithoutProfileNestedInput
@@ -8773,6 +8810,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceCreateNestedManyWithoutProfileInput
@@ -8791,6 +8829,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceUncheckedCreateNestedManyWithoutProfileInput
@@ -8825,6 +8864,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUpdateManyWithoutProfileNestedInput
@@ -8843,6 +8883,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUncheckedUpdateManyWithoutProfileNestedInput
@@ -8861,6 +8902,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceCreateNestedManyWithoutProfileInput
@@ -8879,6 +8921,7 @@ export namespace Prisma {
     website?: string | null
     github?: string | null
     linkedin?: string | null
+    theme?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     experiences?: ExperienceUncheckedCreateNestedManyWithoutProfileInput
@@ -8913,6 +8956,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUpdateManyWithoutProfileNestedInput
@@ -8931,6 +8975,7 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
     linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     experiences?: ExperienceUncheckedUpdateManyWithoutProfileNestedInput

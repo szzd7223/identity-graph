@@ -131,6 +131,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   website: 'website',
   github: 'github',
   linkedin: 'linkedin',
+  theme: 'theme',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

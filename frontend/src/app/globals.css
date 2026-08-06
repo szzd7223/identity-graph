@@ -1,0 +1,187 @@
+/* Import Radix Themes base styles */
+@import "@radix-ui/themes/styles.css";
+
+/* Core Design Tokens (Informed by Saad's Portfolio) */
+:root {
+  --background-hsl: 240, 10%, 3.9%;
+  --background: #050505;
+  
+  --foreground: #f5f5f7;
+  --muted-foreground: rgba(255, 255, 255, 0.45);
+  
+  --surface: rgba(255, 255, 255, 0.025);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  
+  --coral: #d94e4e;
+  --coral-glow: rgba(217, 78, 78, 0.15);
+  --border-focus: var(--coral);
+  
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+  
+  --font-sans: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(217, 78, 78, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.01) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, #050505 0px, var(--background) 100%);
+  background-attachment: fixed;
+}
+
+/* Monospace Tag / Brackets helper */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+
+.mono-label::before {
+  content: "[ ";
+  color: var(--coral);
+}
+
+.mono-label::after {
+  content: " ]";
+  color: var(--coral);
+}
+
+/* Saad Portfolio Styled Glass Card */
+.apple-glass {
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.apple-glass:hover {
+  border-color: var(--coral);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 30px var(--coral-glow);
+}
+
+.apple-glass:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Premium Saad-themed Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--coral);
+  color: #fff;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(217, 78, 78, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1.5deg) scale(1.03);
+  box-shadow: 0 6px 18px rgba(217, 78, 78, 0.45);
+  background: #e05e5e;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* Inputs styled with coral borders on focus */
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 2px rgba(217, 78, 78, 0.25);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
