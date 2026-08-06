@@ -2,6 +2,8 @@
 
 import { useEffect, useState, use } from "react";
 import { api, Profile, Experience, Education, Project, Skill } from "../../services/api";
+import { supabase } from "../../services/supabase";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import Link from "next/link";
 
@@ -12,16 +14,24 @@ interface PageProps {
 }
 
 export default function DashboardPage({ searchParams }: PageProps) {
-  // Unwrap searchParams promise using React.use()
-  const resolvedSearchParams = use(searchParams);
-  const usernameParam = typeof resolvedSearchParams.username === "string" ? resolvedSearchParams.username : "johndoe";
+  const router = useRouter();
+  
+  // Keep props to satisfy Next.js page routing signature
+  use(searchParams);
 
-  const [username, setUsername] = useState(usernameParam);
+  const [username, setUsername] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  // Profile creation states
+  const [createForm, setCreateForm] = useState({
+    username: "",
+    fullName: "",
+    title: "",
+  });
 
   // Form States
   const [overviewForm, setOverviewForm] = useState({
@@ -68,12 +78,13 @@ export default function DashboardPage({ searchParams }: PageProps) {
     category: "",
   });
 
-  const fetchProfile = async (u: string) => {
+  const fetchProfile = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.getProfile(u);
+      const data = await api.getMyProfile();
       setProfile(data);
+      setUsername(data.username);
       setOverviewForm({
         fullName: data.fullName,
         title: data.title,
@@ -86,8 +97,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
         theme: data.theme || "minimalist",
       });
     } catch (err: any) {
-      // If profile doesn't exist, we can offer to create one
-      if (err.message.includes("not found")) {
+      if (err.message && err.message.includes("PROFILE_NOT_FOUND")) {
         setProfile(null);
       } else {
         setError(err.message || "Failed to load profile");
@@ -98,27 +108,60 @@ export default function DashboardPage({ searchParams }: PageProps) {
   };
 
   useEffect(() => {
-    fetchProfile(username);
-  }, [username]);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push("/login");
+        return;
+      }
+      
+      // Load user profile details
+      await fetchProfile();
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+        if (!currentSession) {
+          router.push("/login");
+        }
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    };
+
+    checkAuth();
+  }, [router]);
 
   const showStatus = (msg: string) => {
     setStatusMessage(msg);
     setTimeout(() => setStatusMessage(null), 3000);
   };
 
+  // Sign out handler
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
   // Profile creation
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!createForm.username || !createForm.fullName || !createForm.title) {
+      setError("Username, full name, and title are required.");
+      return;
+    }
     try {
       setLoading(true);
+      setError(null);
       const newProfile = await api.createProfile({
-        username,
-        fullName: "New Developer",
-        title: "Software Engineer",
+        username: createForm.username.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
+        fullName: createForm.fullName,
+        title: createForm.title,
       });
       setProfile(newProfile);
-      fetchProfile(username);
-      showStatus("Profile created successfully!");
+      await fetchProfile();
+      showStatus("Profile initialized successfully!");
     } catch (err: any) {
       setError(err.message || "Failed to create profile");
     } finally {
@@ -132,7 +175,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
     try {
       await api.updateProfile(username, overviewForm);
       showStatus("General details updated successfully!");
-      fetchProfile(username);
+      fetchProfile();
     } catch (err: any) {
       setError(err.message || "Failed to update details");
     }
@@ -156,7 +199,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
       setExpForm({ company: "", role: "", startDate: "", endDate: "", description: "" });
       setShowSubForm(false);
       setEditingItemId(null);
-      fetchProfile(username);
+      fetchProfile();
     } catch (err: any) {
       setError(err.message || "Operation failed");
     }
@@ -178,10 +221,10 @@ export default function DashboardPage({ searchParams }: PageProps) {
     if (!confirm("Are you sure you want to delete this experience?")) return;
     try {
       await api.deleteExperience(id);
-      showStatus("Experience deleted");
-      fetchProfile(username);
+      showStatus("Experience entry removed!");
+      fetchProfile();
     } catch (err: any) {
-      setError(err.message || "Deletion failed");
+      setError(err.message || "Delete failed");
     }
   };
 
@@ -199,7 +242,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
       setEduForm({ institution: "", degree: "", field: "", startDate: "", endDate: "" });
       setShowSubForm(false);
       setEditingItemId(null);
-      fetchProfile(username);
+      fetchProfile();
     } catch (err: any) {
       setError(err.message || "Operation failed");
     }
@@ -221,10 +264,10 @@ export default function DashboardPage({ searchParams }: PageProps) {
     if (!confirm("Are you sure you want to delete this education entry?")) return;
     try {
       await api.deleteEducation(id);
-      showStatus("Education deleted");
-      fetchProfile(username);
+      showStatus("Education entry removed!");
+      fetchProfile();
     } catch (err: any) {
-      setError(err.message || "Deletion failed");
+      setError(err.message || "Delete failed");
     }
   };
 
@@ -234,15 +277,15 @@ export default function DashboardPage({ searchParams }: PageProps) {
     try {
       if (editingItemId) {
         await api.updateProject(editingItemId, projectForm);
-        showStatus("Project entry updated!");
+        showStatus("Project updated!");
       } else {
         await api.addProject(username, projectForm);
-        showStatus("Project entry added!");
+        showStatus("Project added!");
       }
       setProjectForm({ title: "", description: "", url: "", technologies: "" });
       setShowSubForm(false);
       setEditingItemId(null);
-      fetchProfile(username);
+      fetchProfile();
     } catch (err: any) {
       setError(err.message || "Operation failed");
     }
@@ -263,10 +306,10 @@ export default function DashboardPage({ searchParams }: PageProps) {
     if (!confirm("Are you sure you want to delete this project?")) return;
     try {
       await api.deleteProject(id);
-      showStatus("Project deleted");
-      fetchProfile(username);
+      showStatus("Project removed!");
+      fetchProfile();
     } catch (err: any) {
-      setError(err.message || "Deletion failed");
+      setError(err.message || "Delete failed");
     }
   };
 
@@ -274,111 +317,118 @@ export default function DashboardPage({ searchParams }: PageProps) {
   const handleAddSkill = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.addSkill(username, skillForm);
-      showStatus("Skill added!");
+      if (editingItemId) {
+        await api.updateSkill(editingItemId, skillForm);
+        showStatus("Skill updated!");
+      } else {
+        await api.addSkill(username, skillForm);
+        showStatus("Skill added!");
+      }
       setSkillForm({ name: "", category: "" });
       setShowSubForm(false);
-      fetchProfile(username);
+      setEditingItemId(null);
+      fetchProfile();
     } catch (err: any) {
       setError(err.message || "Operation failed");
     }
   };
 
+  const handleEditSkill = (skill: Skill) => {
+    setSkillForm({
+      name: skill.name,
+      category: skill.category || "",
+    });
+    setEditingItemId(skill.id);
+    setShowSubForm(true);
+  };
+
   const handleDeleteSkill = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this skill?")) return;
     try {
       await api.deleteSkill(id);
-      showStatus("Skill removed");
-      fetchProfile(username);
+      showStatus("Skill removed!");
+      fetchProfile();
     } catch (err: any) {
-      setError(err.message || "Deletion failed");
+      setError(err.message || "Delete failed");
     }
   };
 
-  // Profile not found layout
-  if (!loading && !profile) {
-    return (
-      <div className={styles.container} style={{ justifyContent: "center", alignItems: "center", padding: "40px" }}>
-        <div className="glass-panel glow-accent" style={{ padding: "40px", maxWidth: "500px", width: "100%", textRendering: "optimizeLegibility" }}>
-          <h2 style={{ marginBottom: "15px" }}>No Profile Found</h2>
-          <p style={{ color: "var(--muted-foreground)", marginBottom: "30px", fontSize: "0.95rem", lineHeight: "1.5" }}>
-            The profile with username <strong>&apos;{username}&apos;</strong> does not exist in the database yet. Press Create to set up a new portfolio.
-          </p>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button onClick={handleCreateProfile} className="btn-primary" style={{ flex: 1 }}>
-              Create Profile &apos;{username}&apos;
-            </button>
-            <Link href="/" className="btn-secondary" style={{ flex: 1, textAlign: "center" }}>
-              Go Back Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.container}>
-      {/* SIDEBAR TABS */}
+      {/* SIDEBAR NAVIGATION */}
       <aside className={styles.sidebar}>
-        <div className={styles.logoArea}>
-          <div className={styles.logoText}>IdentityGraph</div>
-        </div>
-
-        <div className={styles.userCard}>
-          <div className={styles.avatar}>
-            {profile?.fullName.charAt(0) || "U"}
+        <div className={styles.sidebarHeader}>
+          <div className={styles.avatarMock}>
+            {profile ? profile.fullName.charAt(0).toUpperCase() : "?"}
           </div>
           <div className={styles.userInfo}>
-            <h4>{profile?.fullName}</h4>
-            <p>@{profile?.username}</p>
+            {profile ? (
+              <>
+                <h4>{profile.fullName}</h4>
+                <p>@{profile.username}</p>
+              </>
+            ) : (
+              <>
+                <h4>New User</h4>
+                <p>Create Profile</p>
+              </>
+            )}
           </div>
         </div>
 
-        <nav className={styles.nav}>
-          <button
-            onClick={() => { setActiveTab("overview"); setShowSubForm(false); }}
-            className={`${styles.navItem} ${activeTab === "overview" ? styles.activeNavItem : ""}`}
-          >
-            Overview & Theme
-          </button>
-          <button
-            onClick={() => { setActiveTab("experiences"); setShowSubForm(false); }}
-            className={`${styles.navItem} ${activeTab === "experiences" ? styles.activeNavItem : ""}`}
-          >
-            Experience
-          </button>
-          <button
-            onClick={() => { setActiveTab("education"); setShowSubForm(false); }}
-            className={`${styles.navItem} ${activeTab === "education" ? styles.activeNavItem : ""}`}
-          >
-            Education
-          </button>
-          <button
-            onClick={() => { setActiveTab("projects"); setShowSubForm(false); }}
-            className={`${styles.navItem} ${activeTab === "projects" ? styles.activeNavItem : ""}`}
-          >
-            Projects
-          </button>
-          <button
-            onClick={() => { setActiveTab("skills"); setShowSubForm(false); }}
-            className={`${styles.navItem} ${activeTab === "skills" ? styles.activeNavItem : ""}`}
-          >
-            Skills
-          </button>
-        </nav>
+        {profile && (
+          <nav className={styles.nav}>
+            <button
+              onClick={() => { setActiveTab("overview"); setShowSubForm(false); }}
+              className={`${styles.navItem} ${activeTab === "overview" ? styles.activeNavItem : ""}`}
+            >
+              Overview & Theme
+            </button>
+            <button
+              onClick={() => { setActiveTab("experiences"); setShowSubForm(false); }}
+              className={`${styles.navItem} ${activeTab === "experiences" ? styles.activeNavItem : ""}`}
+            >
+              Experience
+            </button>
+            <button
+              onClick={() => { setActiveTab("education"); setShowSubForm(false); }}
+              className={`${styles.navItem} ${activeTab === "education" ? styles.activeNavItem : ""}`}
+            >
+              Education
+            </button>
+            <button
+              onClick={() => { setActiveTab("projects"); setShowSubForm(false); }}
+              className={`${styles.navItem} ${activeTab === "projects" ? styles.activeNavItem : ""}`}
+            >
+              Projects
+            </button>
+            <button
+              onClick={() => { setActiveTab("skills"); setShowSubForm(false); }}
+              className={`${styles.navItem} ${activeTab === "skills" ? styles.activeNavItem : ""}`}
+            >
+              Skills
+            </button>
+          </nav>
+        )}
 
         <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Link
-            href={`/portfolio/${username}`}
-            target="_blank"
-            className="btn-primary"
-            style={{ fontSize: "0.85rem", padding: "10px 16px", textDecoration: "none", textAlign: "center" }}
+          {profile && (
+            <Link
+              href={`/portfolio/${username}`}
+              target="_blank"
+              className="btn-primary"
+              style={{ fontSize: "0.85rem", padding: "10px 16px", textDecoration: "none", textAlign: "center" }}
+            >
+              View Live Portfolio ↗
+            </Link>
+          )}
+          <button 
+            onClick={handleSignOut} 
+            className="btn-secondary" 
+            style={{ fontSize: "0.85rem", padding: "10px 16px", textAlign: "center", cursor: "pointer" }}
           >
-            View Live Portfolio ↗
-          </Link>
-          <Link href="/" className="btn-secondary" style={{ fontSize: "0.85rem", padding: "10px 16px", textAlign: "center" }}>
-            Exit Dashboard
-          </Link>
+            Sign Out
+          </button>
         </div>
       </aside>
 
@@ -388,18 +438,19 @@ export default function DashboardPage({ searchParams }: PageProps) {
         <div className={styles.header}>
           <div>
             <h1 className={styles.headerTitle}>
-              {activeTab === "overview" && "General Details & Theme Layout"}
-              {activeTab === "experiences" && "Professional Experiences"}
-              {activeTab === "education" && "Education History"}
-              {activeTab === "projects" && "Projects & Side Pursuits"}
-              {activeTab === "skills" && "Skills & Competencies"}
+              {!profile && "Profile Setup"}
+              {profile && activeTab === "overview" && "General Details & Theme Layout"}
+              {profile && activeTab === "experiences" && "Professional Experiences"}
+              {profile && activeTab === "education" && "Education History"}
+              {profile && activeTab === "projects" && "Projects & Side Pursuits"}
+              {profile && activeTab === "skills" && "Skills & Competencies"}
             </h1>
             <p style={{ color: "var(--muted-foreground)", fontSize: "0.9rem", marginTop: "4px" }}>
               Manage the data that will feed directly into your public portfolio layouts and AI MCP client.
             </p>
           </div>
           {statusMessage && (
-            <div style={{ background: "rgba(34, 197, 94, 0.15)", border: "1px solid rgb(34, 197, 94)", color: "rgb(74, 222, 128)", padding: "10px 20px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
+            <div style={{ background: "rgba(217, 78, 78, 0.15)", border: "1px solid rgb(217, 78, 78)", color: "#e05e5e", padding: "10px 20px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}>
               {statusMessage}
             </div>
           )}
@@ -421,6 +472,58 @@ export default function DashboardPage({ searchParams }: PageProps) {
               }
             `}</style>
           </div>
+        ) : !profile ? (
+          /* fallback profile initialization form */
+          <form onSubmit={handleCreateProfile} className="glass-panel" style={{ padding: "40px", maxWidth: "550px", margin: "20px auto" }}>
+            <h3 className={styles.cardTitle}>Initialize Career Graph</h3>
+            <p style={{ color: "var(--muted-foreground)", fontSize: "0.85rem", marginBottom: "24px", lineHeight: "1.5" }}>
+              It looks like you don&apos;t have a career profile set up yet. Enter a unique username and your details below to get started!
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label className={styles.label}>Choose a Unique Username</label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--muted-foreground)", fontWeight: "600", fontSize: "0.95rem" }}>
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ paddingLeft: "32px" }}
+                    placeholder="e.g. johndoe"
+                    value={createForm.username}
+                    onChange={(e) => setCreateForm({ ...createForm, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "") })}
+                    required
+                  />
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label className={styles.label}>Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. John Doe"
+                  value={createForm.fullName}
+                  onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
+                  required
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label className={styles.label}>Professional Title</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Full Stack Engineer"
+                  value={createForm.title}
+                  onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn-primary" style={{ marginTop: "12px", padding: "12px" }}>
+                Initialize Profile
+              </button>
+            </div>
+          </form>
         ) : (
           <div>
             {/* 1. OVERVIEW FORM */}
@@ -540,13 +643,13 @@ export default function DashboardPage({ searchParams }: PageProps) {
               <div>
                 {!showSubForm ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
-                      + Add New Experience
+                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); setExpForm({ company: "", role: "", startDate: "", endDate: "", description: "" }); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
+                      + Add Experience
                     </button>
                     
                     <div className={styles.listContainer}>
                       {profile?.experiences.length === 0 ? (
-                        <p style={{ color: "var(--muted-foreground)" }}>No experiences added yet.</p>
+                        <p style={{ color: "var(--muted-foreground)" }}>No experience entries added yet.</p>
                       ) : (
                         profile?.experiences.map((exp) => (
                           <div key={exp.id} className={styles.listItem}>
@@ -635,7 +738,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
               <div>
                 {!showSubForm ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
+                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); setEduForm({ institution: "", degree: "", field: "", startDate: "", endDate: "" }); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
                       + Add Education
                     </button>
                     
@@ -648,9 +751,8 @@ export default function DashboardPage({ searchParams }: PageProps) {
                             <div className={styles.itemContent}>
                               <h4>{edu.degree}</h4>
                               <div className={styles.itemMeta}>
-                                <strong>{edu.institution}</strong> &bull; {edu.field}
+                                <strong>{edu.institution}</strong> {edu.field && `• ${edu.field}`} &bull; {edu.startDate} to {edu.endDate || "Present"}
                               </div>
-                              <p className={styles.itemDesc}>{edu.startDate} to {edu.endDate || "Present"}</p>
                             </div>
                             <div className={styles.itemActions}>
                               <button onClick={() => handleEditEducation(edu)} className={styles.btnIcon} title="Edit">✏️</button>
@@ -676,7 +778,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
                         />
                       </div>
                       <div className={styles.formGroup}>
-                        <label className={styles.label}>Degree / Certificate</label>
+                        <label className={styles.label}>Degree / Qualification</label>
                         <input
                           type="text"
                           className="form-input"
@@ -686,7 +788,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
                         />
                       </div>
                       <div className={styles.formGroup}>
-                        <label className={styles.label}>Field of Study</label>
+                        <label className={styles.label}>Field of Study (Optional)</label>
                         <input
                           type="text"
                           className="form-input"
@@ -696,22 +798,22 @@ export default function DashboardPage({ searchParams }: PageProps) {
                         />
                       </div>
                       <div className={styles.formGroup}>
-                        <label className={styles.label}>Start Year</label>
+                        <label className={styles.label}>Start Date</label>
                         <input
                           type="text"
                           className="form-input"
-                          placeholder="e.g. 2019"
+                          placeholder="e.g. Sept 2019"
                           value={eduForm.startDate}
                           onChange={(e) => setEduForm({ ...eduForm, startDate: e.target.value })}
                           required
                         />
                       </div>
                       <div className={styles.formGroup}>
-                        <label className={styles.label}>End Year</label>
+                        <label className={styles.label}>End Date</label>
                         <input
                           type="text"
                           className="form-input"
-                          placeholder="e.g. 2023, Present"
+                          placeholder="e.g. May 2023"
                           value={eduForm.endDate || ""}
                           onChange={(e) => setEduForm({ ...eduForm, endDate: e.target.value })}
                         />
@@ -731,27 +833,23 @@ export default function DashboardPage({ searchParams }: PageProps) {
               <div>
                 {!showSubForm ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
+                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); setProjectForm({ title: "", description: "", url: "", technologies: "" }); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
                       + Add Project
                     </button>
                     
                     <div className={styles.listContainer}>
                       {profile?.projects.length === 0 ? (
-                        <p style={{ color: "var(--muted-foreground)" }}>No projects added yet.</p>
+                        <p style={{ color: "var(--muted-foreground)" }}>No project entries added yet.</p>
                       ) : (
                         profile?.projects.map((proj) => (
                           <div key={proj.id} className={styles.listItem}>
                             <div className={styles.itemContent}>
                               <h4>{proj.title}</h4>
-                              <div className={styles.itemMeta}>
-                                {proj.url && <a href={proj.url} target="_blank" style={{ color: "var(--border-focus)", textDecoration: "underline" }}>{proj.url}</a>}
-                              </div>
-                              <p className={styles.itemDesc} style={{ marginBottom: "10px" }}>{proj.description}</p>
-                              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                                {proj.technologies.split(",").map((tech) => (
-                                  <span key={tech} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", fontSize: "0.75rem", padding: "3px 8px", borderRadius: "4px" }}>
-                                    {tech.trim()}
-                                  </span>
+                              <p className={styles.itemDesc}>{proj.description}</p>
+                              {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.8rem", color: "var(--coral)", textDecoration: "underline" }}>{proj.url}</a>}
+                              <div style={{ marginTop: "10px", display: "flex", gap: "5px", flexWrap: "wrap" }}>
+                                {proj.technologies.split(",").map(t => (
+                                  <span key={t} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", fontSize: "0.7rem", padding: "2px 8px", borderRadius: "10px" }}>{t.trim()}</span>
                                 ))}
                               </div>
                             </div>
@@ -779,7 +877,7 @@ export default function DashboardPage({ searchParams }: PageProps) {
                         />
                       </div>
                       <div className={styles.formGroup}>
-                        <label className={styles.label}>Project URL</label>
+                        <label className={styles.label}>Project URL (Optional)</label>
                         <input
                           type="url"
                           className="form-input"
@@ -789,23 +887,23 @@ export default function DashboardPage({ searchParams }: PageProps) {
                         />
                       </div>
                       <div className={`${styles.formGroup} ${styles.formFull}`}>
-                        <label className={styles.label}>Technologies Used (comma separated)</label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="e.g. React, TypeScript, Prisma, PostgreSQL"
-                          value={projectForm.technologies}
-                          onChange={(e) => setProjectForm({ ...projectForm, technologies: e.target.value })}
+                        <label className={styles.label}>Description of Work</label>
+                        <textarea
+                          rows={3}
+                          className="form-textarea"
+                          value={projectForm.description || ""}
+                          onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
                           required
                         />
                       </div>
                       <div className={`${styles.formGroup} ${styles.formFull}`}>
-                        <label className={styles.label}>Short Summary Description</label>
-                        <textarea
-                          rows={4}
-                          className="form-textarea"
-                          value={projectForm.description || ""}
-                          onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                        <label className={styles.label}>Technologies Used (Comma-separated)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. React, Node.js, Prisma, PostgreSQL"
+                          value={projectForm.technologies || ""}
+                          onChange={(e) => setProjectForm({ ...projectForm, technologies: e.target.value })}
                           required
                         />
                       </div>
@@ -822,58 +920,63 @@ export default function DashboardPage({ searchParams }: PageProps) {
             {/* 5. SKILLS TAB */}
             {activeTab === "skills" && (
               <div>
-                <form onSubmit={handleAddSkill} className="glass-panel subForm" style={{ display: "flex", gap: "15px", alignItems: "flex-end" }}>
-                  <div className={styles.formGroup} style={{ flex: 2 }}>
-                    <label className={styles.label}>Skill Name</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. TypeScript"
-                      value={skillForm.name}
-                      onChange={(e) => setSkillForm({ ...skillForm, name: e.target.value })}
-                      required
-                    />
+                {!showSubForm ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <button onClick={() => { setShowSubForm(true); setEditingItemId(null); setSkillForm({ name: "", category: "" }); }} className="btn-primary" style={{ alignSelf: "flex-end" }}>
+                      + Add Skill
+                    </button>
+                    
+                    <div className={styles.listContainer}>
+                      {profile?.skills.length === 0 ? (
+                        <p style={{ color: "var(--muted-foreground)" }}>No skill entries added yet.</p>
+                      ) : (
+                        profile?.skills.map((skill) => (
+                          <div key={skill.id} className={styles.listItem}>
+                            <div className={styles.itemContent}>
+                              <h4>{skill.name}</h4>
+                              {skill.category && <p className={styles.itemDesc}>Category: {skill.category}</p>}
+                            </div>
+                            <div className={styles.itemActions}>
+                              <button onClick={() => handleEditSkill(skill)} className={styles.btnIcon} title="Edit">✏️</button>
+                              <button onClick={() => handleDeleteSkill(skill.id)} className={`${styles.btnIcon} ${styles.btnIconDelete}`} title="Delete">🗑️</button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
-                  <div className={styles.formGroup} style={{ flex: 1.5 }}>
-                    <label className={styles.label}>Category (Optional)</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. Languages, Frontend, Tools"
-                      value={skillForm.category || ""}
-                      onChange={(e) => setSkillForm({ ...skillForm, category: e.target.value })}
-                    />
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ flex: 0.8, height: "46px", padding: "0" }}>
-                    Add Skill
-                  </button>
-                </form>
-
-                <div className="glass-panel" style={{ padding: "30px", marginTop: "30px" }}>
-                  <h3 className={styles.cardTitle}>Your Registered Skills</h3>
-                  <div className={styles.skillsContainer}>
-                    {profile?.skills.length === 0 ? (
-                      <p style={{ color: "var(--muted-foreground)" }}>No skills listed yet.</p>
-                    ) : (
-                      profile?.skills.map((skill) => (
-                        <div key={skill.id} className={styles.skillBadge}>
-                          <span>{skill.name}</span>
-                          {skill.category && (
-                            <span style={{ fontSize: "0.7rem", opacity: 0.6 }}>({skill.category})</span>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteSkill(skill.id)}
-                            className={styles.btnDeleteBadge}
-                            title="Remove Skill"
-                          >
-                            &times;
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+                ) : (
+                  <form onSubmit={handleAddSkill} className="glass-panel" style={{ padding: "30px" }}>
+                    <h3 className={styles.cardTitle}>{editingItemId ? "Edit Skill" : "Add Skill"}</h3>
+                    <div className={styles.formGrid}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Skill Name</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. TypeScript"
+                          value={skillForm.name}
+                          onChange={(e) => setSkillForm({ ...skillForm, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Category (Optional)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. Frontend, Databases"
+                          value={skillForm.category || ""}
+                          onChange={(e) => setSkillForm({ ...skillForm, category: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.subFormActions}>
+                      <button type="button" onClick={() => setShowSubForm(false)} className="btn-secondary">Cancel</button>
+                      <button type="submit" className="btn-primary">Save Entry</button>
+                    </div>
+                  </form>
+                )}
               </div>
             )}
           </div>

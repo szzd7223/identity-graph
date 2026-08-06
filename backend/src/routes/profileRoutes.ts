@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getProfile,
+  getMyProfile,
   createProfile,
   updateProfile,
   addExperience,
@@ -16,32 +17,34 @@ import {
   updateSkill,
   deleteSkill
 } from "../controllers/profileController.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
 // Profile CRUD routes
+router.get("/profiles/me", requireAuth, getMyProfile);
 router.get("/profiles/:username", getProfile);
-router.post("/profiles", createProfile);
-router.put("/profiles/:username", updateProfile);
+router.post("/profiles", requireAuth, createProfile);
+router.put("/profiles/:username", requireAuth, updateProfile);
 
 // Experiences CRUD routes
-router.post("/profiles/:username/experiences", addExperience);
-router.put("/experiences/:id", updateExperience);
-router.delete("/experiences/:id", deleteExperience);
+router.post("/profiles/:username/experiences", requireAuth, addExperience);
+router.put("/experiences/:id", requireAuth, updateExperience);
+router.delete("/experiences/:id", requireAuth, deleteExperience);
 
 // Education CRUD routes
-router.post("/profiles/:username/education", addEducation);
-router.put("/education/:id", updateEducation);
-router.delete("/education/:id", deleteEducation);
+router.post("/profiles/:username/education", requireAuth, addEducation);
+router.put("/education/:id", requireAuth, updateEducation);
+router.delete("/education/:id", requireAuth, deleteEducation);
 
 // Projects CRUD routes
-router.post("/profiles/:username/projects", addProject);
-router.put("/projects/:id", updateProject);
-router.delete("/projects/:id", deleteProject);
+router.post("/profiles/:username/projects", requireAuth, addProject);
+router.put("/projects/:id", requireAuth, updateProject);
+router.delete("/projects/:id", requireAuth, deleteProject);
 
 // Skills CRUD routes
-router.post("/profiles/:username/skills", addSkill);
-router.put("/skills/:id", updateSkill);
-router.delete("/skills/:id", deleteSkill);
+router.post("/profiles/:username/skills", requireAuth, addSkill);
+router.put("/skills/:id", requireAuth, updateSkill);
+router.delete("/skills/:id", requireAuth, deleteSkill);
 
 export default router;

@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 export interface Experience {
@@ -51,12 +53,20 @@ export interface Profile {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(options?.headers || {}),
+  };
+
+  if (session?.access_token) {
+    (headers as any)["Authorization"] = `Bearer ${session.access_token}`;
+  }
+
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
+    headers,
     // Prevent Next.js from caching GET requests during editing
     cache: "no-store",
   });
@@ -77,6 +87,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Profiles
+  getMyProfile: () => request<Profile>("/profiles/me"),
   getProfile: (username: string) => request<Profile>(`/profiles/${username}`),
   createProfile: (data: Partial<Profile>) =>
     request<Profile>("/profiles", {

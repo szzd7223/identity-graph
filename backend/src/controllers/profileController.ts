@@ -1,5 +1,56 @@
 import { Request, Response } from "express";
 import { prisma } from "../db.js";
+import { AuthRequest } from "../middleware/auth.js";
+
+async function verifyProfileOwner(username: string, req: Request): Promise<string | null> {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) return null;
+
+  const profile = await prisma.profile.findUnique({ where: { username } });
+  if (!profile || profile.id !== userId) return null;
+
+  return profile.id;
+}
+
+async function verifyExperienceOwner(id: string, req: Request): Promise<boolean> {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) return false;
+  const item = await prisma.experience.findUnique({
+    where: { id },
+    select: { profile: { select: { id: true } } }
+  });
+  return item?.profile?.id === userId;
+}
+
+async function verifyEducationOwner(id: string, req: Request): Promise<boolean> {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) return false;
+  const item = await prisma.education.findUnique({
+    where: { id },
+    select: { profile: { select: { id: true } } }
+  });
+  return item?.profile?.id === userId;
+}
+
+async function verifyProjectOwner(id: string, req: Request): Promise<boolean> {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) return false;
+  const item = await prisma.project.findUnique({
+    where: { id },
+    select: { profile: { select: { id: true } } }
+  });
+  return item?.profile?.id === userId;
+}
+
+async function verifySkillOwner(id: string, req: Request): Promise<boolean> {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) return false;
+  const item = await prisma.skill.findUnique({
+    where: { id },
+    select: { profile: { select: { id: true } } }
+  });
+  return item?.profile?.id === userId;
+}
 
 // ==========================================
 // PROFILE CONTROLLERS
@@ -31,9 +82,45 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// Get the currently authenticated user's profile
+export const getMyProfile = async (req: Request, res: Response): Promise<void> => {
+  const userId = (req as AuthRequest).user?.id;
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized. User session missing." });
+    return;
+  }
+
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { id: userId },
+      include: {
+        experiences: true,
+        education: true,
+        projects: true,
+        skills: true
+      }
+    });
+
+    if (!profile) {
+      res.status(404).json({ error: "Profile not found", code: "PROFILE_NOT_FOUND" });
+      return;
+    }
+
+    res.json(profile);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to fetch own profile", details: error.message });
+  }
+};
+
 // Create a new profile
 export const createProfile = async (req: Request, res: Response): Promise<void> => {
   const { username, fullName, title, bio, email, phone, website, github, linkedin, theme } = req.body;
+  const userId = (req as AuthRequest).user?.id;
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized. User session missing." });
+    return;
+  }
 
   if (!username || !fullName || !title) {
     res.status(400).json({ error: "Username, full name, and title are required fields." });
@@ -49,6 +136,7 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
 
     const profile = await prisma.profile.create({
       data: {
+        id: userId,
         username,
         fullName,
         title,
@@ -74,6 +162,12 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
   const { fullName, title, bio, email, phone, website, github, linkedin, theme } = req.body;
 
   try {
+    const ownerId = await verifyProfileOwner(username, req);
+    if (!ownerId) {
+      res.status(403).json({ error: "Forbidden. You do not own this profile." });
+      return;
+    }
+
     const profile = await prisma.profile.update({
       where: { username },
       data: {
@@ -109,15 +203,15 @@ export const addExperience = async (req: Request, res: Response): Promise<void> 
   }
 
   try {
-    const profile = await prisma.profile.findUnique({ where: { username } });
-    if (!profile) {
-      res.status(404).json({ error: "Profile not found" });
+    const profileId = await verifyProfileOwner(username, req);
+    if (!profileId) {
+      res.status(403).json({ error: "Forbidden. You do not own this profile." });
       return;
     }
 
     const experience = await prisma.experience.create({
       data: {
-        profileId: profile.id,
+        profileId,
         company,
         role,
         startDate,
@@ -137,6 +231,12 @@ export const updateExperience = async (req: Request, res: Response): Promise<voi
   const { company, role, startDate, endDate, description } = req.body;
 
   try {
+    const isOwner = await verifyExperienceOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     const experience = await prisma.experience.update({
       where: { id },
       data: {
@@ -158,6 +258,12 @@ export const deleteExperience = async (req: Request, res: Response): Promise<voi
   const { id } = req.params as { id: string };
 
   try {
+    const isOwner = await verifyExperienceOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     await prisma.experience.delete({ where: { id } });
     res.json({ message: "Experience deleted successfully" });
   } catch (error: any) {
@@ -179,15 +285,15 @@ export const addEducation = async (req: Request, res: Response): Promise<void> =
   }
 
   try {
-    const profile = await prisma.profile.findUnique({ where: { username } });
-    if (!profile) {
-      res.status(404).json({ error: "Profile not found" });
+    const profileId = await verifyProfileOwner(username, req);
+    if (!profileId) {
+      res.status(403).json({ error: "Forbidden. You do not own this profile." });
       return;
     }
 
     const education = await prisma.education.create({
       data: {
-        profileId: profile.id,
+        profileId,
         institution,
         degree,
         field,
@@ -207,6 +313,12 @@ export const updateEducation = async (req: Request, res: Response): Promise<void
   const { institution, degree, field, startDate, endDate } = req.body;
 
   try {
+    const isOwner = await verifyEducationOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     const education = await prisma.education.update({
       where: { id },
       data: {
@@ -228,6 +340,12 @@ export const deleteEducation = async (req: Request, res: Response): Promise<void
   const { id } = req.params as { id: string };
 
   try {
+    const isOwner = await verifyEducationOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     await prisma.education.delete({ where: { id } });
     res.json({ message: "Education deleted successfully" });
   } catch (error: any) {
@@ -249,15 +367,15 @@ export const addProject = async (req: Request, res: Response): Promise<void> => 
   }
 
   try {
-    const profile = await prisma.profile.findUnique({ where: { username } });
-    if (!profile) {
-      res.status(404).json({ error: "Profile not found" });
+    const profileId = await verifyProfileOwner(username, req);
+    if (!profileId) {
+      res.status(403).json({ error: "Forbidden. You do not own this profile." });
       return;
     }
 
     const project = await prisma.project.create({
       data: {
-        profileId: profile.id,
+        profileId,
         title,
         description,
         url,
@@ -276,6 +394,12 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   const { title, description, url, technologies } = req.body;
 
   try {
+    const isOwner = await verifyProjectOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     const project = await prisma.project.update({
       where: { id },
       data: {
@@ -296,6 +420,12 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
   const { id } = req.params as { id: string };
 
   try {
+    const isOwner = await verifyProjectOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     await prisma.project.delete({ where: { id } });
     res.json({ message: "Project deleted successfully" });
   } catch (error: any) {
@@ -317,15 +447,15 @@ export const addSkill = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const profile = await prisma.profile.findUnique({ where: { username } });
-    if (!profile) {
-      res.status(404).json({ error: "Profile not found" });
+    const profileId = await verifyProfileOwner(username, req);
+    if (!profileId) {
+      res.status(403).json({ error: "Forbidden. You do not own this profile." });
       return;
     }
 
     const skill = await prisma.skill.create({
       data: {
-        profileId: profile.id,
+        profileId,
         name,
         category
       }
@@ -342,6 +472,12 @@ export const updateSkill = async (req: Request, res: Response): Promise<void> =>
   const { name, category } = req.body;
 
   try {
+    const isOwner = await verifySkillOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     const skill = await prisma.skill.update({
       where: { id },
       data: {
@@ -360,6 +496,12 @@ export const deleteSkill = async (req: Request, res: Response): Promise<void> =>
   const { id } = req.params as { id: string };
 
   try {
+    const isOwner = await verifySkillOwner(id, req);
+    if (!isOwner) {
+      res.status(403).json({ error: "Forbidden. You do not own this record." });
+      return;
+    }
+
     await prisma.skill.delete({ where: { id } });
     res.json({ message: "Skill deleted successfully" });
   } catch (error: any) {
