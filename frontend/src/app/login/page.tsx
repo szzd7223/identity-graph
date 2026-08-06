@@ -4,29 +4,25 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../services/supabase";
 import Link from "next/link";
-import { Flex, Text } from "@radix-ui/themes";
+import { ThemeToggle } from "../../components/ui/ThemeToggle";
 import { GitHubLogoIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 
 export default function LoginPage() {
   const router = useRouter();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Redirect to dashboard if session exists
   useEffect(() => {
-    const checkUser = async () => {
+    const check = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.push("/dashboard");
-      }
+      if (session) router.push("/dashboard");
     };
-    checkUser();
+    check();
   }, [router]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
@@ -34,156 +30,110 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     setMessage(null);
-
     try {
       if (isSignUp) {
-        const { data, error: signUpError } = await supabase.auth.signUp({
+        const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
-        
-        if (signUpError) throw signUpError;
-        
-        if (data.session) {
-          router.push("/dashboard");
-        } else {
-          setMessage("Confirmation email sent! Please check your inbox.");
-        }
+        if (err) throw err;
+        if (data.session) router.push("/dashboard");
+        else setMessage("Check your inbox to confirm your email.");
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (signInError) throw signInError;
+        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+        if (err) throw err;
         router.push("/dashboard");
       }
     } catch (err: any) {
-      setError(err.message || "An authentication error occurred.");
+      setError(err.message || "Authentication failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGitHubLogin = async () => {
+  const handleGitHub = async () => {
     setLoading(true);
     setError(null);
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "github",
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
+        options: { redirectTo: `${window.location.origin}/dashboard` },
       });
-      if (oauthError) throw oauthError;
+      if (err) throw err;
     } catch (err: any) {
-      setError(err.message || "OAuth login failed.");
+      setError(err.message || "OAuth failed.");
       setLoading(false);
     }
   };
 
   return (
-    <Flex justify="center" align="center" style={{ minHeight: "100vh", padding: "20px", background: "#050505", position: "relative", overflow: "hidden" }}>
-      {/* Background Orbs */}
-      <div style={{ position: "absolute", top: "10%", left: "-10%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(217, 78, 78, 0.04) 0%, transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }}></div>
-      <div style={{ position: "absolute", bottom: "10%", right: "-10%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(255, 255, 255, 0.01) 0%, transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }}></div>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
 
-      <div className="apple-glass" style={{ maxWidth: "440px", width: "100%", padding: "40px", zIndex: 1 }}>
-        
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div className="mono-label" style={{ marginBottom: "8px" }}>access portal</div>
-          <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
-            {isSignUp ? "Create Account" : "Welcome Back"}
-          </h2>
-          <Text size="2" style={{ color: "var(--muted-foreground)", marginTop: "6px", display: "block" }}>
-            {isSignUp ? "Sign up to start building your career graph" : "Log in to manage your profile and MCP connections"}
-          </Text>
+      <div style={{ position: "fixed", top: "16px", right: "16px" }}>
+        <ThemeToggle />
+      </div>
+
+      <div className="card" style={{ width: "100%", maxWidth: "380px" }}>
+
+        <div style={{ marginBottom: "24px" }}>
+          <h1 style={{ fontSize: "1.15rem", fontWeight: 600, marginBottom: "4px" }}>
+            {isSignUp ? "Create account" : "Sign in"}
+          </h1>
+          <p style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
+            {isSignUp ? "Start building your career graph" : "Manage your profile and MCP connections"}
+          </p>
         </div>
 
-        {/* Status Indicators */}
         {error && (
-          <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", color: "rgb(248, 113, 113)", padding: "12px 16px", borderRadius: "8px", fontSize: "0.85rem", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--color-bg-subtle)", border: "1px solid var(--color-danger)", borderRadius: "var(--radius-md)", padding: "10px 12px", marginBottom: "16px", fontSize: "0.82rem", color: "var(--color-danger)" }}>
             <InfoCircledIcon />
-            <span>{error}</span>
+            {error}
           </div>
         )}
+
         {message && (
-          <div style={{ background: "rgba(217, 78, 78, 0.1)", border: "1px solid rgba(217, 78, 78, 0.3)", color: "#e05e5e", padding: "12px 16px", borderRadius: "8px", fontSize: "0.85rem", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center" }}>
-            <InfoCircledIcon />
-            <span>{message}</span>
+          <div style={{ background: "var(--color-bg-subtle)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", padding: "10px 12px", marginBottom: "16px", fontSize: "0.82rem", color: "var(--color-text-muted)" }}>
+            {message}
           </div>
         )}
 
-        {/* Auth Form */}
-        <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Email Address</label>
-            <input
-              type="email"
-              className="form-input"
-              placeholder="name@domain.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label className="form-label">Email</label>
+            <input type="email" className="form-input" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          <div>
+            <label className="form-label">Password</label>
+            <input type="password" className="form-input" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-
-          <button type="submit" className="btn-primary" style={{ marginTop: "8px", padding: "12px" }} disabled={loading}>
-            {loading ? "Processing..." : isSignUp ? "Sign Up" : "Log In"}
+          <button type="submit" className="btn-primary" style={{ marginTop: "4px" }} disabled={loading}>
+            {loading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
           </button>
         </form>
 
-        {/* Divider */}
-        <div style={{ display: "flex", alignItems: "center", margin: "24px 0", gap: "12px" }}>
-          <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
-          <span style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textTransform: "lowercase", fontFamily: "var(--font-mono)" }}>or</span>
-          <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "18px 0" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--color-border)" }} />
+          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", fontFamily: "var(--font-mono)" }}>or</span>
+          <div style={{ flex: 1, height: "1px", background: "var(--color-border)" }} />
         </div>
 
-        {/* Social GitHub Auth */}
-        <button 
-          onClick={handleGitHubLogin} 
-          className="btn-secondary" 
-          style={{ width: "100%", padding: "12px", display: "flex", gap: "8px", alignItems: "center", justifyContent: "center" }}
-          disabled={loading}
-        >
-          <GitHubLogoIcon width="18" height="18" />
-          <span>Continue with GitHub</span>
+        <button onClick={handleGitHub} className="btn-secondary" style={{ width: "100%", gap: "8px" }} disabled={loading}>
+          <GitHubLogoIcon width={16} height={16} />
+          Continue with GitHub
         </button>
 
-        {/* Toggle link */}
-        <div style={{ textAlign: "center", marginTop: "24px" }}>
-          <button 
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
+          <button
             onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
-            style={{ background: "none", border: "none", color: "var(--coral)", fontSize: "0.85rem", cursor: "pointer", fontWeight: 600 }}
+            className="btn-ghost"
           >
-            {isSignUp ? "Already have an account? Log In" : "Don't have an account? Sign Up"}
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}
           </button>
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Link href="/" style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textDecoration: "none" }}>
-            ← back to home
-          </Link>
+          <Link href="/" className="btn-ghost">← Home</Link>
         </div>
 
       </div>
-    </Flex>
+    </div>
   );
 }

@@ -1,0 +1,48 @@
+/* ============================================================
+   IDENTITY GRAPH — CENTRALIZED DESIGN TOKENS
+   To change the theme: edit the variables below only.
+   Light/dark is handled via [data-theme="light"] on <html>.
+   ============================================================ */
+
+/* ---------- Dark Mode (default) ---------- */
+:root {
+  --color-bg:         #0f0f0f;
+  --color-bg-subtle:  #161616;
+  --color-surface:    #1c1c1c;
+  --color-border:     #2a2a2a;
+  --color-border-focus: #555;
+
+  --color-text:       #ebebeb;
+  --color-text-muted: #777;
+  --color-text-faint: #444;
+
+  --color-accent:     #ebebeb;        /* primary action color */
+  --color-accent-fg:  #0f0f0f;       /* text on accent bg */
+  --color-danger:     #e05252;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --font-sans: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --transition: 120ms ease;
+}
+
+/* ---------- Light Mode ---------- */
+[data-theme="light"] {
+  --color-bg:         #fafafa;
+  --color-bg-subtle:  #f2f2f2;
+  --color-surface:    #fff;
+  --color-border:     #e0e0e0;
+  --color-border-focus: #999;
+
+  --color-text:       #111;
+  --color-text-muted: #888;
+  --color-text-faint: #bbb;
+
+  --color-accent:     #111;
+  --color-accent-fg:  #fff;
+  --color-danger:     #d93535;
+}
