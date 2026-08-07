@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { api, Skill } from "../../services/api";
-import styles from "../../app/dashboard/page.module.css";
 
 interface SkillsTabProps {
   skills: Skill[];
@@ -25,6 +24,7 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
       if (editingId) {
         await api.updateSkill(editingId, form);
@@ -33,23 +33,22 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
         await api.addSkill(username, form);
         showStatus("Skill added!");
       }
-      setForm(EMPTY_FORM);
       setShowForm(false);
-      setEditingId(null);
       onMutated();
     } catch (err: any) {
-      setError(err.message || "Operation failed");
+      setError(err.message || "Failed to save skill");
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this skill?")) return;
+    setError(null);
     try {
       await api.deleteSkill(id);
-      showStatus("Skill removed!");
+      showStatus("Skill deleted");
       onMutated();
     } catch (err: any) {
-      setError(err.message || "Delete failed");
+      setError(err.message || "Failed to delete skill");
     }
   };
 
@@ -58,18 +57,16 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
       {!showForm ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <button onClick={openAdd} className="btn-primary" style={{ alignSelf: "flex-end" }}>+ Add Skill</button>
-          <div className={styles.listContainer}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             {skills.length === 0 ? (
-              <p style={{ color: "var(--color-text-muted)" }}>No skill entries added yet.</p>
+              <p style={{ color: "#78716c" }}>No skill entries added yet.</p>
             ) : (
               skills.map((skill) => (
-                <div key={skill.id} className={styles.listItem}>
-                  <div className={styles.itemContent}>
-                    <h4>{skill.name}</h4>
-                  </div>
-                  <div className={styles.itemActions}>
-                    <button onClick={() => openEdit(skill)} className={styles.btnIcon} title="Edit">✏️</button>
-                    <button onClick={() => handleDelete(skill.id)} className={`${styles.btnIcon} ${styles.btnIconDelete}`} title="Delete">🗑️</button>
+                <div key={skill.id} style={{ background: "#ffffff", border: "1.5px solid #181616", padding: "8px 14px", borderRadius: "10px", display: "inline-flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#181616" }}>{skill.name}</span>
+                  <div style={{ display: "flex", gap: "4px" }}>
+                    <button onClick={() => openEdit(skill)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.75rem" }} title="Edit">✏️</button>
+                    <button onClick={() => handleDelete(skill.id)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.75rem" }} title="Delete">🗑️</button>
                   </div>
                 </div>
               ))
@@ -81,13 +78,13 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
             flexDirection: "column",
             gap: "16px",
             marginTop: "32px", 
-            borderTop: "1px solid var(--color-border)", 
+            borderTop: "1px solid #e7e4dc", 
             paddingTop: "24px" 
           }}>
             <div style={{
-              background: "var(--color-bg-subtle)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-md)",
+              background: "#fbf9f4",
+              border: "1px solid #e7e4dc",
+              borderRadius: "14px",
               padding: "20px",
               display: "flex",
               alignItems: "center",
@@ -95,15 +92,15 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
               gap: "16px"
             }}>
               <div>
-                <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "4px", color: "var(--color-text)" }}>Ready to share?</h4>
-                <p style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>All your career data has been synchronized. Click below to view your public profile.</p>
+                <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "4px", color: "#181616" }}>Ready to share?</h4>
+                <p style={{ fontSize: "0.82rem", color: "#78716c" }}>All your career data has been synchronized. Click below to view your public profile.</p>
               </div>
               <a 
                 href={`/portfolio/${username}`} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="btn-primary" 
-                style={{ textDecoration: "none", whiteSpace: "nowrap" }}
+                className="btn-yellow-pill" 
+                style={{ textDecoration: "none", whiteSpace: "nowrap", padding: "10px 20px" }}
               >
                 View Live Portfolio ↗
               </a>
@@ -111,15 +108,15 @@ export function SkillsTab({ skills, username, onMutated, showStatus, setError }:
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="card">
-          <h3 className={styles.cardTitle}>{editingId ? "Edit Skill" : "Add Skill"}</h3>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Skill Name</label>
+        <form onSubmit={handleSubmit} style={{ background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "20px", padding: "28px" }}>
+          <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "16px" }}>{editingId ? "Edit Skill" : "Add Skill"}</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Skill Name</label>
               <input type="text" className="form-input" placeholder="e.g. TypeScript" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
           </div>
-          <div className={styles.subFormActions}>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "20px" }}>
             <button type="button" onClick={cancel} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Save Entry</button>
           </div>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { api } from "../../services/api";
-import styles from "../../app/dashboard/page.module.css";
 
 interface ProfileSetupFormProps {
   onCreated: () => void;
@@ -227,15 +226,15 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card" style={{ width: "100%", maxWidth: "520px", padding: "36px", zIndex: 10 }}>
+    <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "560px", background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "28px", padding: "40px", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.02)", margin: "0 auto" }}>
       
       {/* Onboarding Wizard Header */}
-      <div className={styles.onboardingHeader} style={{ marginBottom: "24px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <div>
-          <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-text-muted)" }}>
+          <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#78716c" }}>
             Setup Wizard (Step {step} of 5)
           </span>
-          <h2 style={{ fontFamily: "var(--font-title)", fontSize: "1.25rem", fontWeight: 800, marginTop: "2px", color: "var(--color-text)" }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginTop: "2px", color: "#181616" }}>
             {step === 1 && "Account Handle & Info"}
             {step === 2 && "First Experience Entry"}
             {step === 3 && "First Education Entry"}
@@ -245,13 +244,15 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
         </div>
 
         {/* Step Progress Indicators */}
-        <div className={styles.stepProgress}>
+        <div style={{ display: "flex", gap: "6px" }}>
           {[1, 2, 3, 4, 5].map((s) => (
             <div
               key={s}
-              className={`${styles.stepDot} ${step === s ? styles.activeStepDot : ""}`}
               style={{
-                background: s < step ? "var(--color-text)" : undefined
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                background: s === step ? "#181616" : s < step ? "#047857" : "#e7e4dc"
               }}
             />
           ))}
@@ -306,7 +307,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div>
-            <label className={styles.label}>Profile Handle URL</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Profile Handle URL</label>
             <div style={{ position: "relative", marginTop: "4px" }}>
               <span style={{ 
                 position: "absolute", 
@@ -331,7 +332,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Full Name</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Full Name</label>
             <input
               type="text"
               className="form-input"
@@ -344,7 +345,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Professional Title</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Professional Title</label>
             <input
               type="text"
               className="form-input"
@@ -357,7 +358,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Email Address</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Email Address</label>
             <input
               type="email"
               className="form-input"
@@ -369,7 +370,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Biography Bio</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Biography Bio</label>
             <textarea
               className="form-input"
               style={{ minHeight: "60px", borderRadius: "var(--radius-md)", padding: "10px 12px" }}
@@ -395,7 +396,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
       {step === 2 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Company Name</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Company Name</label>
             <input
               type="text"
               className="form-input"
@@ -408,7 +409,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Job Role / Title</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Job Role / Title</label>
             <input
               type="text"
               className="form-input"
@@ -422,7 +423,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label className={styles.label}>Start Date</label>
+              <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Start Date</label>
               <input
                 type="text"
                 className="form-input"
@@ -434,7 +435,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label className={styles.label}>End Date</label>
+              <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>End Date</label>
               <input
                 type="text"
                 className="form-input"
@@ -447,7 +448,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Description of Accomplishments</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Description of Accomplishments</label>
             <textarea
               className="form-input"
               style={{ minHeight: "60px", borderRadius: "var(--radius-md)", padding: "10px 12px" }}
@@ -491,7 +492,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
       {step === 3 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Institution / School</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Institution / School</label>
             <input
               type="text"
               className="form-input"
@@ -504,7 +505,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Degree / Qualification</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Degree / Qualification</label>
             <input
               type="text"
               className="form-input"
@@ -517,7 +518,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Field of Study</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Field of Study</label>
             <input
               type="text"
               className="form-input"
@@ -530,7 +531,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label className={styles.label}>Start Date</label>
+              <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Start Date</label>
               <input
                 type="text"
                 className="form-input"
@@ -542,7 +543,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label className={styles.label}>End Date</label>
+              <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>End Date</label>
               <input
                 type="text"
                 className="form-input"
@@ -588,7 +589,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
       {step === 4 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Project Title</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Project Title</label>
             <input
               type="text"
               className="form-input"
@@ -601,7 +602,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Technologies (Comma-separated)</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Technologies (Comma-separated)</label>
             <input
               type="text"
               className="form-input"
@@ -614,7 +615,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Description</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Description</label>
             <textarea
               className="form-input"
               style={{ minHeight: "65px", borderRadius: "var(--radius-md)", padding: "10px 12px" }}
@@ -626,7 +627,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label className={styles.label}>Project URL (Optional)</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Project URL (Optional)</label>
             <input
               type="url"
               className="form-input"
@@ -671,7 +672,7 @@ export function ProfileSetupForm({ onCreated, setError, showStatus }: ProfileSet
       {step === 5 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div>
-            <label className={styles.label}>Core Skills (Comma-separated)</label>
+            <label style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616" }}>Core Skills (Comma-separated)</label>
             <input
               type="text"
               className="form-input"

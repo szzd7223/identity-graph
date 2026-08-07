@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../hooks/useAuth";
 import { useProfile } from "../../hooks/useProfile";
-import { DashboardSidebar } from "../../components/dashboard/DashboardSidebar";
-import { ProfileSetupForm } from "../../components/dashboard/ProfileSetupForm";
+import { DashboardSkeleton, DashboardTab } from "../../components/dashboard/DashboardSkeleton";
 import { OverviewTab } from "../../components/dashboard/OverviewTab";
 import { ExperiencesTab } from "../../components/dashboard/ExperiencesTab";
 import { EducationTab } from "../../components/dashboard/EducationTab";
@@ -12,16 +12,13 @@ import { ProjectsTab } from "../../components/dashboard/ProjectsTab";
 import { SkillsTab } from "../../components/dashboard/SkillsTab";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import { StatusBar } from "../../components/ui/StatusBar";
-import styles from "./page.module.css";
-
-type Tab = "overview" | "experiences" | "education" | "projects" | "skills";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const TAB_TITLES: Record<Tab, string> = {
-  overview: "General Details & Theme Layout",
+const TAB_TITLES: Record<DashboardTab, string> = {
+  overview: "General Details & Bio",
   experiences: "Professional Experiences",
   education: "Education History",
   projects: "Projects & Side Pursuits",
@@ -30,52 +27,67 @@ const TAB_TITLES: Record<Tab, string> = {
 
 export default function DashboardPage({ searchParams }: PageProps) {
   use(searchParams);
-  const { signOut } = useAuth();
-  const { profile, setError, username, loading, error, statusMessage, profileNotFound, showStatus, fetchProfile } = useProfile();
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const router = useRouter();
+  const { session, loading: authLoading, signOut } = useAuth();
+  const { profile, setError, username, loading: profileLoading, error, statusMessage, profileNotFound, showStatus, fetchProfile } = useProfile();
+  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (!authLoading && !session) {
+      router.replace("/login");
+    } else if (session) {
+      fetchProfile();
+    }
+  }, [session, authLoading, fetchProfile, router]);
 
-  const handleTabChange = (tab: Tab) => setActiveTab(tab);
+  useEffect(() => {
+    if (!authLoading && !profileLoading && profileNotFound) {
+      router.replace("/onboarding");
+    }
+  }, [profileNotFound, profileLoading, authLoading, router]);
+
+  const handleTabChange = (tab: DashboardTab) => setActiveTab(tab);
+
+  if (authLoading || profileLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!session || profileNotFound) {
+    return null;
+  }
 
   return (
-    <div className={styles.container}>
-      {loading ? (
-        <LoadingSpinner />
-      ) : profileNotFound ? (
-        <ProfileSetupForm onCreated={fetchProfile} setError={setError} showStatus={showStatus} />
-      ) : profile ? (
-        <div className={styles.dashboardWrapper}>
-          <DashboardSidebar
-            profile={profile}
-            username={username}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            onSignOut={signOut}
-          />
-
-          <main className={styles.mainContent}>
-            <div className={styles.header}>
+    <div style={{ minHeight: "100vh", background: "#fbf9f4" }}>
+      {profile ? (
+        <DashboardSkeleton
+          profile={profile}
+          username={username}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onSignOut={signOut}
+        >
+          {/* Main Content Workspace Area */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e7e4dc", paddingBottom: "16px" }}>
               <div>
-                <h1 className={styles.headerTitle}>
+                <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#181616" }}>
                   {TAB_TITLES[activeTab]}
                 </h1>
-                <p style={{ color: "var(--color-text-muted)", fontSize: "0.82rem", marginTop: "6px", lineHeight: 1.5 }}>
-                  Manage the data that feeds directly into your public portfolio layouts and AI MCP client.
+                <p style={{ color: "#78716c", fontSize: "0.85rem", marginTop: "4px", lineHeight: 1.5 }}>
+                  Manage the verified data that feeds directly into your public web portfolio and AI MCP client.
                 </p>
               </div>
               <StatusBar statusMessage={statusMessage} error={error} onDismissError={() => setError(null)} />
             </div>
 
+            {/* Active Tab Component */}
             {activeTab === "overview" && <OverviewTab profile={profile} username={username} onSaved={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("experiences")} />}
             {activeTab === "experiences" && <ExperiencesTab experiences={profile.experiences} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("education")} />}
             {activeTab === "education" && <EducationTab education={profile.education} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("projects")} />}
             {activeTab === "projects" && <ProjectsTab projects={profile.projects} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("skills")} />}
             {activeTab === "skills" && <SkillsTab skills={profile.skills} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
-          </main>
-        </div>
+          </div>
+        </DashboardSkeleton>
       ) : null}
     </div>
   );
