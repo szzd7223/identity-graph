@@ -3,16 +3,15 @@
 import { useEffect, useState } from "react";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
 
   useEffect(() => {
-    // Read from localStorage or fall back to system preference
+    // Read from localStorage or fall back to light
     const stored = localStorage.getItem("ig-theme") as "dark" | "light" | null;
     if (stored) {
       setTheme(stored);
     } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "dark" : "light");
+      setTheme("light");
     }
   }, []);
 
