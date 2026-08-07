@@ -1,5 +1,19 @@
 import { NextResponse } from "next/server";
 
+function sanitizeRawData(data: any) {
+  if (!data || typeof data !== "object") return data;
+
+  const { id, profileId, createdAt, updatedAt, ...cleanProfile } = data;
+
+  return {
+    ...cleanProfile,
+    experiences: (cleanProfile.experiences || []).map(({ id, profileId, createdAt, updatedAt, ...rest }: any) => rest),
+    education: (cleanProfile.education || []).map(({ id, profileId, createdAt, updatedAt, ...rest }: any) => rest),
+    projects: (cleanProfile.projects || []).map(({ id, profileId, createdAt, updatedAt, ...rest }: any) => rest),
+    skills: (cleanProfile.skills || []).map(({ id, profileId, createdAt, updatedAt, ...rest }: any) => rest),
+  };
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ username: string }> }
@@ -20,10 +34,11 @@ export async function GET(
       );
     }
 
-    const data = await res.json();
+    const rawData = await res.json();
+    const cleanData = sanitizeRawData(rawData);
 
-    // Return clean JSON schema optimized for AI web fetching
-    return NextResponse.json(data, {
+    // Return clean JSON schema optimized for AI web fetching (without internal IDs)
+    return NextResponse.json(cleanData, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json; charset=utf-8",

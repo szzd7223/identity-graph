@@ -49,15 +49,44 @@ async function extractRawText(buffer: Buffer, mimetype: string): Promise<string>
 
 // ─── LLM Structured Extraction Prompt ────────────────────────────────────────
 function buildPrompt(rawText: string): string {
-  return `Parse this resume. Return ONLY raw JSON, no markdown or explanation.
+  return `You are an expert resume parser. Parse this resume and extract ALL items found into structured JSON format.
+Return ONLY valid raw JSON, with no markdown code blocks, formatting, or conversational text.
 
-Schema:
-{"profile":{"fullName":"","title":"","bio":"2-3 sentence summary","email":null,"phone":null,"website":null,"github":"username only","linkedin":"username only"},"experiences":[{"company":"","role":"","startDate":"","endDate":null,"description":""}],"education":[{"institution":"","degree":"","field":null,"startDate":null,"endDate":null}],"projects":[{"title":"","description":"","url":null,"technologies":"comma-separated"}],"skills":[{"name":""}]}
+JSON Schema:
+{
+  "profile": {
+    "fullName": "",
+    "title": "",
+    "bio": "2-3 sentence summary",
+    "email": null,
+    "phone": null,
+    "website": null,
+    "github": "username only",
+    "linkedin": "username only"
+  },
+  "experiences": [
+    { "company": "", "role": "", "startDate": "", "endDate": null, "description": "" }
+  ],
+  "education": [
+    { "institution": "", "degree": "", "field": null, "startDate": null, "endDate": null }
+  ],
+  "projects": [
+    { "title": "", "description": "", "url": null, "technologies": "comma-separated list" }
+  ],
+  "skills": [
+    { "name": "" }
+  ]
+}
 
-Rules: Extract everything found. Use null for missing fields. github/linkedin = username only, no URLs.
+CRITICAL INSTRUCTIONS:
+1. Extract ALL projects listed anywhere in the resume (Personal Projects, Side Pursuits, Academic Projects, Open Source, Portfolio Work). Do NOT stop after 1 project. Return EVERY single project as an entry in the "projects" array.
+2. Extract ALL work experiences into the "experiences" array.
+3. Extract ALL education entries into the "education" array.
+4. Extract ALL technical & professional skills into the "skills" array.
+5. Use null for missing fields. github/linkedin = username handle only, no URLs.
 
-Resume:
-${rawText.slice(0, 8000)}`;
+Resume Text:
+${rawText.slice(0, 15000)}`;
 }
 
 // ─── Main Controller ──────────────────────────────────────────────────────────
@@ -101,9 +130,16 @@ export const parseResume = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    res.json({ success: true, data: parsed });
+    // Return structured data directly to frontend
+    res.json({
+      success: true,
+      data: parsed,
+    });
   } catch (error: any) {
-    console.error("[Resume Parser] Error:", error.message);
-    res.status(500).json({ error: "Resume parsing failed.", details: error.message });
+    console.error("[Resume Parser Error]:", error);
+    res.status(500).json({
+      error: "Failed to parse resume file.",
+      details: error.message || String(error),
+    });
   }
 };
