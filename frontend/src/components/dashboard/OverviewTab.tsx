@@ -10,9 +10,10 @@ interface OverviewTabProps {
   onSaved: () => void;
   showStatus: (msg: string) => void;
   setError: (msg: string | null) => void;
+  onNext?: () => void;
 }
 
-export function OverviewTab({ profile, username, onSaved, showStatus, setError }: OverviewTabProps) {
+export function OverviewTab({ profile, username, onSaved, showStatus, setError, onNext }: OverviewTabProps) {
   const [form, setForm] = useState({
     fullName: profile.fullName,
     title: profile.title,
@@ -22,7 +23,7 @@ export function OverviewTab({ profile, username, onSaved, showStatus, setError }
     website: profile.website || "",
     github: profile.github || "",
     linkedin: profile.linkedin || "",
-    theme: profile.theme || "minimalist",
+    theme: "teak",
   });
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export function OverviewTab({ profile, username, onSaved, showStatus, setError }
       website: profile.website || "",
       github: profile.github || "",
       linkedin: profile.linkedin || "",
-      theme: profile.theme || "minimalist",
+      theme: "teak",
     });
   }, [profile]);
 
@@ -45,6 +46,7 @@ export function OverviewTab({ profile, username, onSaved, showStatus, setError }
       await api.updateProfile(username, form);
       showStatus("General details updated successfully!");
       onSaved();
+      if (onNext) onNext();
     } catch (err: any) {
       setError(err.message || "Failed to update details");
     }
@@ -63,11 +65,11 @@ export function OverviewTab({ profile, username, onSaved, showStatus, setError }
           <input type="text" className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
         </div>
         <div className={`${styles.formGroup} ${styles.formFull}`}>
-          <label className={styles.label}>Bio / Summary Statement</label>
-          <textarea rows={4} className="form-textarea" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
+          <label className={styles.label}>Short Biography</label>
+          <textarea className="form-input" style={{ minHeight: "80px" }} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Contact Email</label>
+          <label className={styles.label}>Email Address</label>
           <input type="email" className="form-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
         <div className={styles.formGroup}>
@@ -88,27 +90,16 @@ export function OverviewTab({ profile, username, onSaved, showStatus, setError }
         </div>
       </div>
 
-      <h3 className={styles.cardTitle} style={{ marginTop: "40px" }}>Portfolio Theme Design</h3>
-      <div className={styles.themeGrid}>
-        {[
-          { id: "minimalist", name: "Plain Minimalist", desc: "A clean, lightweight black-on-white layout focusing purely on typography, content readability, and spacious margins." },
-          { id: "material-tiles", name: "Material UI Tiles", desc: "A modular dark-mode dashboard card layout featuring elevated surfaces, structural grid patterns, and modern spacing." },
-          { id: "nothing-phone", name: "Nothing Phone Inspired", desc: "Retro-futuristic dot matrix grid backdrop with typewriter monospace lettering, dashed borders, and red indicator lights." },
-        ].map((theme) => (
-          <div
-            key={theme.id}
-            onClick={() => setForm({ ...form, theme: theme.id })}
-            className={`${styles.themeCard} ${form.theme === theme.id ? styles.activeThemeCard : ""}`}
-          >
-            <div className={styles.themeName}>{theme.name}</div>
-            <div className={styles.themeDesc}>{theme.desc}</div>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: "12px", marginTop: "40px" }}>
+        <button type="submit" className="btn-primary" style={{ width: "260px" }}>
+          Save & Continue to Experience →
+        </button>
+        {onNext && (
+          <button type="button" className="btn-secondary" onClick={onNext}>
+            Skip Step
+          </button>
+        )}
       </div>
-
-      <button type="submit" className="btn-primary" style={{ marginTop: "40px", width: "200px" }}>
-        Save All Changes
-      </button>
     </form>
   );
 }

@@ -42,41 +42,41 @@ export default function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className={styles.container}>
-      <DashboardSidebar
-        profile={profile}
-        username={username}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onSignOut={signOut}
-      />
+      {loading ? (
+        <LoadingSpinner />
+      ) : profileNotFound ? (
+        <ProfileSetupForm onCreated={fetchProfile} setError={setError} showStatus={showStatus} />
+      ) : profile ? (
+        <div className={styles.dashboardWrapper}>
+          <DashboardSidebar
+            profile={profile}
+            username={username}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            onSignOut={signOut}
+          />
 
-      <main className={styles.mainContent}>
-        <div className={styles.header}>
-          <div>
-            <h1 className={styles.headerTitle}>
-              {profileNotFound ? "Profile Setup" : profile ? TAB_TITLES[activeTab] : "Loading..."}
-            </h1>
-            <p style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", marginTop: "4px" }}>
-              Manage the data that feeds directly into your public portfolio layouts and AI MCP client.
-            </p>
-          </div>
-          <StatusBar statusMessage={statusMessage} error={error} onDismissError={() => setError(null)} />
-        </div>
+          <main className={styles.mainContent}>
+            <div className={styles.header}>
+              <div>
+                <h1 className={styles.headerTitle}>
+                  {TAB_TITLES[activeTab]}
+                </h1>
+                <p style={{ color: "var(--color-text-muted)", fontSize: "0.82rem", marginTop: "6px", lineHeight: 1.5 }}>
+                  Manage the data that feeds directly into your public portfolio layouts and AI MCP client.
+                </p>
+              </div>
+              <StatusBar statusMessage={statusMessage} error={error} onDismissError={() => setError(null)} />
+            </div>
 
-        {loading ? (
-          <LoadingSpinner />
-        ) : profileNotFound ? (
-          <ProfileSetupForm onCreated={fetchProfile} setError={setError} showStatus={showStatus} />
-        ) : profile ? (
-          <>
-            {activeTab === "overview" && <OverviewTab profile={profile} username={username} onSaved={fetchProfile} showStatus={showStatus} setError={setError} />}
-            {activeTab === "experiences" && <ExperiencesTab experiences={profile.experiences} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
-            {activeTab === "education" && <EducationTab education={profile.education} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
-            {activeTab === "projects" && <ProjectsTab projects={profile.projects} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
+            {activeTab === "overview" && <OverviewTab profile={profile} username={username} onSaved={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("experiences")} />}
+            {activeTab === "experiences" && <ExperiencesTab experiences={profile.experiences} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("education")} />}
+            {activeTab === "education" && <EducationTab education={profile.education} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("projects")} />}
+            {activeTab === "projects" && <ProjectsTab projects={profile.projects} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("skills")} />}
             {activeTab === "skills" && <SkillsTab skills={profile.skills} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
-          </>
-        ) : null}
-      </main>
+          </main>
+        </div>
+      ) : null}
     </div>
   );
 }

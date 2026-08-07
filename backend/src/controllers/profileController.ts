@@ -150,7 +150,7 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
       }
     });
 
-    res.status(210).json(profile); // Using Express 5 status
+    res.status(201).json(profile);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to create profile", details: error.message });
   }
@@ -221,6 +221,7 @@ export const addExperience = async (req: Request, res: Response): Promise<void> 
     });
 
     res.status(201).json(experience);
+    syncProfileToHydra(profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to add experience", details: error.message });
   }
@@ -249,6 +250,7 @@ export const updateExperience = async (req: Request, res: Response): Promise<voi
     });
 
     res.json(experience);
+    syncProfileToHydra(experience.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to update experience", details: error.message });
   }
@@ -264,8 +266,10 @@ export const deleteExperience = async (req: Request, res: Response): Promise<voi
       return;
     }
 
+    const item = await prisma.experience.findUnique({ where: { id }, select: { profileId: true } });
     await prisma.experience.delete({ where: { id } });
     res.json({ message: "Experience deleted successfully" });
+    if (item?.profileId) syncProfileToHydra(item.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete experience", details: error.message });
   }
@@ -303,6 +307,7 @@ export const addEducation = async (req: Request, res: Response): Promise<void> =
     });
 
     res.status(201).json(education);
+    syncProfileToHydra(profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to add education", details: error.message });
   }
@@ -331,6 +336,7 @@ export const updateEducation = async (req: Request, res: Response): Promise<void
     });
 
     res.json(education);
+    syncProfileToHydra(education.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to update education", details: error.message });
   }
@@ -346,8 +352,10 @@ export const deleteEducation = async (req: Request, res: Response): Promise<void
       return;
     }
 
+    const item = await prisma.education.findUnique({ where: { id }, select: { profileId: true } });
     await prisma.education.delete({ where: { id } });
     res.json({ message: "Education deleted successfully" });
+    if (item?.profileId) syncProfileToHydra(item.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete education", details: error.message });
   }
@@ -384,6 +392,7 @@ export const addProject = async (req: Request, res: Response): Promise<void> => 
     });
 
     res.status(201).json(project);
+    syncProfileToHydra(profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to add project", details: error.message });
   }
@@ -411,6 +420,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
     });
 
     res.json(project);
+    syncProfileToHydra(project.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to update project", details: error.message });
   }
@@ -426,8 +436,10 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    const item = await prisma.project.findUnique({ where: { id }, select: { profileId: true } });
     await prisma.project.delete({ where: { id } });
     res.json({ message: "Project deleted successfully" });
+    if (item?.profileId) syncProfileToHydra(item.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete project", details: error.message });
   }
@@ -462,6 +474,7 @@ export const addSkill = async (req: Request, res: Response): Promise<void> => {
     });
 
     res.status(201).json(skill);
+    syncProfileToHydra(profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to add skill", details: error.message });
   }
@@ -487,6 +500,7 @@ export const updateSkill = async (req: Request, res: Response): Promise<void> =>
     });
 
     res.json(skill);
+    syncProfileToHydra(skill.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to update skill", details: error.message });
   }
@@ -502,8 +516,10 @@ export const deleteSkill = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    const item = await prisma.skill.findUnique({ where: { id }, select: { profileId: true } });
     await prisma.skill.delete({ where: { id } });
     res.json({ message: "Skill deleted successfully" });
+    if (item?.profileId) syncProfileToHydra(item.profileId).catch(console.error);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete skill", details: error.message });
   }

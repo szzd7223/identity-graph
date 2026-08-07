@@ -10,11 +10,12 @@ interface EducationTabProps {
   onMutated: () => void;
   showStatus: (msg: string) => void;
   setError: (msg: string | null) => void;
+  onNext?: () => void;
 }
 
 const EMPTY_FORM: Partial<Education> = { institution: "", degree: "", field: "", startDate: "", endDate: "" };
 
-export function EducationTab({ education, username, onMutated, showStatus, setError }: EducationTabProps) {
+export function EducationTab({ education, username, onMutated, showStatus, setError, onNext }: EducationTabProps) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<Education>>(EMPTY_FORM);
@@ -78,6 +79,14 @@ export function EducationTab({ education, username, onMutated, showStatus, setEr
               ))
             )}
           </div>
+
+          {onNext && (
+            <div style={{ display: "flex", marginTop: "32px", borderTop: "1px solid var(--color-border)", paddingTop: "24px" }}>
+              <button type="button" className="btn-primary" onClick={onNext} style={{ width: "260px" }}>
+                Continue to Projects →
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="card">

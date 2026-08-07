@@ -25,7 +25,11 @@ export function useProfile() {
       setProfile(data);
       setUsername(data.username);
     } catch (err: any) {
-      if (err.message && err.message.includes("PROFILE_NOT_FOUND")) {
+      const isNotFound = err.message && (
+        err.message.includes("PROFILE_NOT_FOUND") || 
+        err.message.toLowerCase().includes("profile not found")
+      );
+      if (isNotFound) {
         setProfile(null);
         setProfileNotFound(true);
       } else {

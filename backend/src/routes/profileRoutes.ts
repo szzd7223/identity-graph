@@ -17,6 +17,7 @@ import {
   updateSkill,
   deleteSkill
 } from "../controllers/profileController.js";
+import { parseResume, upload } from "../controllers/resumeController.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
@@ -46,5 +47,8 @@ router.delete("/projects/:id", requireAuth, deleteProject);
 router.post("/profiles/:username/skills", requireAuth, addSkill);
 router.put("/skills/:id", requireAuth, updateSkill);
 router.delete("/skills/:id", requireAuth, deleteSkill);
+
+// AI Resume Parsing (no auth — stateless extraction)
+router.post("/parse-resume", upload.single("resume"), parseResume);
 
 export default router;

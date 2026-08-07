@@ -72,58 +72,8 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
     );
   }
 
-  const selectedTheme = profile.theme || "minimalist";
-
-  // Map theme parameters to specific layout styles
-  const getThemeClasses = (theme: string) => {
-    switch (theme) {
-      case "nothing-phone":
-        return {
-          wrapper: styles.nothingPhone,
-          header: styles.nothingPhoneHeader,
-          title: styles.nothingPhoneHeaderTitle,
-          bio: styles.nothingPhoneHeaderBio,
-          contact: styles.nothingPhoneContact,
-          section: styles.nothingPhoneSection,
-          card: styles.nothingPhoneCard,
-          meta: styles.nothingPhoneMeta,
-          desc: styles.nothingPhoneDesc,
-          skill: styles.nothingPhoneSkill,
-        };
-      case "material-tiles":
-        return {
-          wrapper: styles.materialTiles,
-          header: styles.materialTilesHeader,
-          title: styles.materialTilesHeaderTitle,
-          bio: styles.materialTilesHeaderBio,
-          contact: styles.materialTilesContact,
-          section: styles.materialTilesSection,
-          card: styles.materialTilesCard,
-          meta: styles.materialTilesMeta,
-          desc: styles.materialTilesDesc,
-          skill: styles.materialTilesSkill,
-        };
-      case "minimalist":
-      default:
-        return {
-          wrapper: styles.minimalist,
-          header: styles.minimalistHeader,
-          title: styles.minimalistHeaderTitle,
-          bio: styles.minimalistHeaderBio,
-          contact: styles.minimalistContact,
-          section: styles.minimalistSection,
-          card: styles.minimalistCard,
-          meta: styles.minimalistMeta,
-          desc: styles.minimalistDesc,
-          skill: styles.minimalistSkill,
-        };
-    }
-  };
-
-  const themeStyles = getThemeClasses(selectedTheme);
-
   return (
-    <div className={`${styles.portfolioWrapper} ${themeStyles.wrapper}`}>
+    <div className={`${styles.portfolioWrapper} ${styles.teakWrapper}`}>
       
       {/* Floating Back Button */}
       <Link href={`/dashboard?username=${username}`} className={styles.btnBack}>
@@ -135,12 +85,12 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
         {/* ==========================================
             HEADER / HERO SECTION
            ========================================== */}
-        <header className={themeStyles.header}>
+        <header className={styles.teakHeader}>
           <h1>{profile.fullName}</h1>
-          <div className={themeStyles.title}>{profile.title}</div>
+          <div className={styles.teakHeaderTitle}>{profile.title}</div>
           
           {profile.bio && (
-            <p className={themeStyles.bio}>
+            <p className={styles.teakHeaderBio}>
               {profile.bio}
             </p>
           )}
@@ -148,22 +98,22 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
           {/* Social Links */}
           <Flex gap="3" wrap="wrap" style={{ marginTop: "24px" }}>
             {profile.email && (
-              <a href={`mailto:${profile.email}`} className={themeStyles.contact}>
+              <a href={`mailto:${profile.email}`} className={styles.teakContact}>
                 email
               </a>
             )}
             {profile.website && (
-              <a href={profile.website} target="_blank" rel="noopener noreferrer" className={themeStyles.contact}>
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className={styles.teakContact}>
                 website
               </a>
             )}
             {profile.github && (
-              <a href={profile.github} target="_blank" rel="noopener noreferrer" className={themeStyles.contact}>
+              <a href={profile.github} target="_blank" rel="noopener noreferrer" className={styles.teakContact}>
                 github
               </a>
             )}
             {profile.linkedin && (
-              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className={themeStyles.contact}>
+              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className={styles.teakContact}>
                 linkedin
               </a>
             )}
@@ -174,18 +124,18 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
             EXPERIENCES SECTION
            ========================================== */}
         {profile.experiences.length > 0 && (
-          <section className={themeStyles.section}>
+          <section className={styles.teakSection}>
             <h2>Experience</h2>
             <Flex direction="column" gap="4">
               {profile.experiences.map((exp) => (
-                <div key={exp.id} className={themeStyles.card}>
+                <div key={exp.id} className={styles.teakCard}>
                   <Flex justify="between" align="start" style={{ marginBottom: "6px" }}>
                     <h3>{exp.role}</h3>
                     <span style={{ fontSize: "0.75rem", opacity: 0.6 }}>{exp.startDate} – {exp.endDate || "Present"}</span>
                   </Flex>
-                  <div className={themeStyles.meta}>{exp.company}</div>
+                  <div className={styles.teakMeta}>{exp.company}</div>
                   {exp.description && (
-                    <p className={themeStyles.desc}>{exp.description}</p>
+                    <p className={styles.teakDesc}>{exp.description}</p>
                   )}
                 </div>
               ))}
@@ -197,59 +147,33 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
             PROJECTS SECTION
            ========================================== */}
         {profile.projects.length > 0 && (
-          <section className={themeStyles.section}>
+          <section className={styles.teakSection}>
             <h2>Projects</h2>
             
-            {/* Show as a grid for Tiles and Nothing, list for minimalist */}
-            {selectedTheme === "minimalist" ? (
-              <Flex direction="column" gap="4">
-                {profile.projects.map((proj) => (
-                  <div key={proj.id} className={themeStyles.card}>
-                    <Flex justify="between" align="center" style={{ marginBottom: "8px" }}>
+            <Grid columns={{ initial: "1", sm: "2" }} gap="4">
+              {profile.projects.map((proj) => (
+                <div key={proj.id} className={styles.teakCard} style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <Flex justify="between" align="start" style={{ marginBottom: "10px" }}>
                       <h3>{proj.title}</h3>
                       {proj.url && (
-                        <a href={proj.url} target="_blank" rel="noopener noreferrer" className={themeStyles.contact} style={{ fontSize: "0.75rem", padding: "4px 8px" }}>
+                        <a href={proj.url} target="_blank" rel="noopener noreferrer" className={styles.teakContact} style={{ fontSize: "0.75rem", padding: "4px 8px" }}>
                           link ↗
                         </a>
                       )}
                     </Flex>
-                    <p className={themeStyles.desc} style={{ marginBottom: "15px" }}>{proj.description}</p>
-                    <Flex gap="2" wrap="wrap">
-                      {proj.technologies.split(",").map((tech) => (
-                        <span key={tech} className={themeStyles.skill} style={{ fontSize: "0.7rem", padding: "4px 10px" }}>
-                          {tech.trim()}
-                        </span>
-                      ))}
-                    </Flex>
+                    <p className={styles.teakDesc} style={{ marginBottom: "15px" }}>{proj.description}</p>
                   </div>
-                ))}
-              </Flex>
-            ) : (
-              <Grid columns={{ initial: "1", sm: "2" }} gap="4">
-                {profile.projects.map((proj) => (
-                  <div key={proj.id} className={themeStyles.card} style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                      <Flex justify="between" align="start" style={{ marginBottom: "10px" }}>
-                        <h3>{proj.title}</h3>
-                        {proj.url && (
-                          <a href={proj.url} target="_blank" rel="noopener noreferrer" className={themeStyles.contact} style={{ fontSize: "0.75rem", padding: "4px 8px" }}>
-                            link
-                          </a>
-                        )}
-                      </Flex>
-                      <p className={themeStyles.desc} style={{ marginBottom: "15px" }}>{proj.description}</p>
-                    </div>
-                    <Flex gap="2" wrap="wrap" style={{ marginTop: "auto" }}>
-                      {proj.technologies.split(",").map((tech) => (
-                        <span key={tech} className={themeStyles.skill} style={{ fontSize: "0.7rem", padding: "4px 10px" }}>
-                          {tech.trim()}
-                        </span>
-                      ))}
-                    </Flex>
-                  </div>
-                ))}
-              </Grid>
-            )}
+                  <Flex gap="2" wrap="wrap" style={{ marginTop: "auto" }}>
+                    {proj.technologies.split(",").map((tech) => (
+                      <span key={tech} className={styles.teakSkill} style={{ fontSize: "0.7rem", padding: "4px 10px" }}>
+                        {tech.trim()}
+                      </span>
+                    ))}
+                  </Flex>
+                </div>
+              ))}
+            </Grid>
           </section>
         )}
 
@@ -257,16 +181,16 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
             EDUCATION SECTION
            ========================================== */}
         {profile.education.length > 0 && (
-          <section className={themeStyles.section}>
+          <section className={styles.teakSection}>
             <h2>Education</h2>
             <Flex direction="column" gap="4">
               {profile.education.map((edu) => (
-                <div key={edu.id} className={themeStyles.card}>
+                <div key={edu.id} className={styles.teakCard}>
                   <Flex justify="between" align="start" style={{ marginBottom: "6px" }}>
                     <h3>{edu.degree}</h3>
                     <span style={{ fontSize: "0.75rem", opacity: 0.6 }}>{edu.startDate} – {edu.endDate || "Present"}</span>
                   </Flex>
-                  <div className={themeStyles.meta} style={{ marginBottom: 0 }}>
+                  <div className={styles.teakMeta} style={{ marginBottom: 0 }}>
                     {edu.institution} {edu.field && `• ${edu.field}`}
                   </div>
                 </div>
@@ -279,12 +203,12 @@ export default function PortfolioPage({ params }: PortfolioPageProps) {
             SKILLS SECTION
            ========================================== */}
         {profile.skills.length > 0 && (
-          <section className={themeStyles.section}>
+          <section className={styles.teakSection}>
             <h2>Skills</h2>
             <Flex gap="2" wrap="wrap" style={{ marginTop: "10px" }}>
               {profile.skills.map((skill) => (
-                <span key={skill.id} className={themeStyles.skill}>
-                  {skill.name} {skill.category && <span style={{ opacity: 0.5, fontSize: "0.75rem" }}>({skill.category})</span>}
+                <span key={skill.id} className={styles.teakSkill}>
+                  {skill.name}
                 </span>
               ))}
             </Flex>

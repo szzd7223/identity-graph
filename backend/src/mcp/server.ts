@@ -207,9 +207,6 @@ server.registerTool(
         content: [{ type: "text", text: `Error generating formatted resume: ${error.message}` }],
       };
     }
-  }
-);
-
 // Connect using standard I/O (stdio) transport
 const transport = new StdioServerTransport();
 await server.connect(transport);

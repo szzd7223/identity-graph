@@ -163,4 +163,33 @@ export const api = {
     request<{ message: string }>(`/skills/${id}`, {
       method: "DELETE",
     }),
+
+  // AI Resume Parsing
+  parseResume: async (file: File): Promise<any> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    const headers: HeadersInit = {};
+    if (session?.access_token) {
+      headers["Authorization"] = `Bearer ${session.access_token}`;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/parse-resume`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!res.ok) {
+      let errorMsg = `Resume parsing failed: ${res.statusText}`;
+      try {
+        const errJson = await res.json();
+        errorMsg = errJson.error || errorMsg;
+      } catch { /* ignored */ }
+      throw new Error(errorMsg);
+    }
+
+    return res.json();
+  },
 };
