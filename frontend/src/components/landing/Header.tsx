@@ -66,7 +66,7 @@ export function Header() {
             </Link>
           )}
 
-          <a href="#demo" className="btn-pill">
+          <Link href="/demo" className="btn-pill">
             <span>See it in action</span>
             <svg
               width="10"
@@ -77,7 +77,7 @@ export function Header() {
             >
               <polygon points="2,1 9,5 2,9" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </header>

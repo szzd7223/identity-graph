@@ -208,16 +208,16 @@ export function ProblemSolutionSection() {
             </p>
 
             <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap", marginTop: "8px" }}>
-              <a href="#demo" className="btn-yellow-pill" style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
+              <Link href="/demo" className="btn-yellow-pill" style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
                 <span>See it in action</span>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
                   <polygon points="2,1 9,5 2,9" />
                 </svg>
-              </a>
-              <a href="#docs" className="btn-login-link" style={{ fontSize: "0.85rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              </Link>
+              <Link href="/demo" className="btn-login-link" style={{ fontSize: "0.85rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <span>Read MCP docs</span>
                 <span style={{ fontSize: "0.75rem" }}>▶</span>
-              </a>
+              </Link>
             </div>
           </div>
 

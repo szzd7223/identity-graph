@@ -23,12 +23,12 @@ export function HeroSection() {
 
           {/* Call to Action Button */}
           <div style={{ marginTop: "8px" }}>
-            <a href="#demo" className="btn-yellow-pill">
+            <Link href="/demo" className="btn-yellow-pill">
               <span>See it in action</span>
               <svg width="12" height="12" viewBox="0 0 10 10" fill="currentColor">
                 <polygon points="2,1 9,5 2,9" />
               </svg>
-            </a>
+            </Link>
           </div>
 
           {/* Metrics Row */}

@@ -62,10 +62,10 @@ export function CtaFooterSection() {
                 </Link>
               )}
 
-              <a href="#demo" className="btn-login-link" style={{ fontSize: "0.88rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Link href="/demo" className="btn-login-link" style={{ fontSize: "0.88rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <span>See Live Demo</span>
                 <span style={{ fontSize: "0.75rem" }}>▶</span>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -159,14 +159,14 @@ export function CtaFooterSection() {
               <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616", textTransform: "uppercase", letterSpacing: "0.05em" }}>Product</div>
               <Link href="/dashboard" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Dashboard</Link>
               <Link href="/login" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Sign In</Link>
-              <a href="#demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Live Demo</a>
+              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Live Demo</Link>
             </div>
 
             {/* Column 2: Resources */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616", textTransform: "uppercase", letterSpacing: "0.05em" }}>Resources</div>
-              <a href="#docs" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>MCP Docs</a>
-              <a href="#schema" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Schema Spec</a>
+              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>MCP Docs</Link>
+              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Schema Spec</Link>
             </div>
 
             {/* Column 3: Connect */}
