@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ScrollReveal } from "./ScrollReveal";
 
 export function HeroSection() {
   return (
@@ -8,33 +9,42 @@ export function HeroSection() {
       <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "50px 32px 90px 32px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "48px", alignItems: "center" }}>
         
         {/* Left Column: Headline, Subheading, Button & Metrics */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "660px" }}>
-          
-          {/* Main Headline */}
-          <h1 style={{ fontSize: "clamp(1.75rem, 3.2vw, 2.5rem)", fontWeight: 800, color: "#181616", lineHeight: 1.18, letterSpacing: "-0.035em" }}>
-            Ideating personalized Emails and Pitches doesn't have to be{" "}
-            <span className="highlight-yellow">frustrating</span>
-          </h1>
+        <ScrollReveal delayMs={100}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "660px" }}>
+            
+            {/* Main Headline */}
+            <h1 style={{ fontSize: "clamp(1.75rem, 3.2vw, 2.5rem)", fontWeight: 800, color: "#181616", lineHeight: 1.18, letterSpacing: "-0.035em" }}>
+              Ideating personalized Emails and Pitches doesn't have to be{" "}
+              <span className="highlight-yellow">frustrating</span>
+            </h1>
 
-          {/* Subheading */}
-          <p style={{ fontSize: "1.05rem", color: "#57534e", lineHeight: 1.6, maxWidth: "580px" }}>
-            IdentityGraph makes sure your LLMs have the correct context about you so that you don't have to cross check stale or made up data while writing emails or applying to jobs.
-          </p>
+            {/* Subheading */}
+            <p style={{ fontSize: "1.05rem", color: "#57534e", lineHeight: 1.6, maxWidth: "580px" }}>
+              IdentityGraph makes sure your LLMs have the correct context about you so that you don't have to cross check stale or made up data while writing emails or applying to jobs.
+            </p>
 
-          {/* Call to Action Button */}
-          <div style={{ marginTop: "8px" }}>
-            <Link href="/demo" className="btn-yellow-pill">
-              <span>See it in action</span>
-              <svg width="12" height="12" viewBox="0 0 10 10" fill="currentColor">
-                <polygon points="2,1 9,5 2,9" />
-              </svg>
-            </Link>
+            {/* Call to Action Buttons */}
+            <div style={{ marginTop: "8px", display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
+              <Link href="/login" className="btn-yellow-pill">
+                <span>Get Started Free</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                  <polygon points="2,1 9,5 2,9" />
+                </svg>
+              </Link>
+
+              <Link href="/demo" className="btn-white-pill">
+                <span>See It In Action</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                  <polygon points="2,1 9,5 2,9" />
+                </svg>
+              </Link>
+            </div>
+
           </div>
-
-        </div>
+        </ScrollReveal>
 
         {/* Right Column: Browser Window Mockup in Landscape with Continuous Swipe-up Animation */}
-        <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+        <ScrollReveal delayMs={250} style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
           <div style={{ 
             width: "100%",
             maxWidth: "500px", 
@@ -74,7 +84,7 @@ export function HeroSection() {
                         <div style={{ fontSize: "0.72rem", color: "#a8a29e" }}>Context: Past Engineering Achievements</div>
                       </div>
                     </div>
-                    <span style={{ fontSize: "0.68rem", background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "4px", fontWeight: 600 }}>✓ Verified Stats</span>
+                    <span style={{ fontSize: "0.68rem", background: "#fef3c7", color: "#92400e", padding: "3px 8px", borderRadius: "4px", fontWeight: 600 }}>✓ Live Stats</span>
                   </div>
                   <div style={{ padding: "12px 14px", background: "#faf8f2", borderRadius: "10px", border: "1px solid #e7e5dd", fontSize: "0.8rem", color: "#44403c", lineHeight: 1.45 }}>
                     "Hi Sarah, saw your post on distributed queues. At IdentityGraph, I led zero-downtime database migrations with 99.99% uptime..."
@@ -96,7 +106,7 @@ export function HeroSection() {
                     <span style={{ fontSize: "0.68rem", background: "#e0e7ff", color: "#3730a3", padding: "3px 8px", borderRadius: "4px", fontWeight: 600 }}>✓ Zero Hallucination</span>
                   </div>
                   <div style={{ padding: "12px 14px", background: "#faf8f2", borderRadius: "10px", border: "1px solid #e7e5dd", fontSize: "0.8rem", color: "#44403c", lineHeight: 1.45 }}>
-                    "Our LLM assistant fetched verified project stats: 100k+ API requests processed seamlessly without prompt tweaking..."
+                    "Our LLM assistant fetched real-time project stats: 100k+ API requests processed seamlessly without prompt tweaking..."
                   </div>
                 </div>
 
@@ -115,14 +125,14 @@ export function HeroSection() {
                     <span style={{ fontSize: "0.68rem", background: "#d1fae5", color: "#065f46", padding: "3px 8px", borderRadius: "4px", fontWeight: 600 }}>✓ MCP Synced</span>
                   </div>
                   <div style={{ padding: "12px 14px", background: "#faf8f2", borderRadius: "10px", border: "1px solid #e7e5dd", fontSize: "0.8rem", color: "#44403c", lineHeight: 1.45 }}>
-                    "Automatically matching verified career history with target role requirements without manual cross-checking..."
+                    "Automatically matching career history with target role requirements without manual cross-checking..."
                   </div>
                 </div>
 
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
       </div>
     </section>

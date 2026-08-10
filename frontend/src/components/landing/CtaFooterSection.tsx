@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase";
+import { ScrollReveal } from "./ScrollReveal";
 
 export function CtaFooterSection() {
   const [session, setSession] = useState<any>(null);
@@ -20,17 +21,18 @@ export function CtaFooterSection() {
       <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "60px 32px 40px 32px", display: "flex", flexDirection: "column", gap: "80px" }}>
         
         {/* CTA Banner Card: Ready to level up? */}
-        <div style={{ 
-          background: "#ffffff", 
-          border: "1.5px solid #e7e4dc", 
-          borderRadius: "28px", 
-          padding: "52px 44px", 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
-          gap: "44px", 
-          alignItems: "center",
-          boxShadow: "0 4px 24px rgba(0, 0, 0, 0.02)"
-        }}>
+        <ScrollReveal delayMs={100}>
+          <div style={{ 
+            background: "#ffffff", 
+            border: "1.5px solid #e7e4dc", 
+            borderRadius: "28px", 
+            padding: "52px 44px", 
+            display: "grid", 
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
+            gap: "44px", 
+            alignItems: "center",
+            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.02)"
+          }}>
           {/* Left Side text & CTAs */}
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <div style={{ display: "inline-flex", alignSelf: "flex-start", padding: "4px 12px", border: "1px solid #d6d3c9", borderRadius: "6px", fontFamily: "var(--font-mono)", fontSize: "0.78rem", color: "#57534e", fontWeight: 600 }}>
@@ -111,9 +113,11 @@ export function CtaFooterSection() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Structured Footer */}
-        <footer style={{ borderTop: "1px solid rgba(24, 22, 22, 0.1)", paddingTop: "48px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "40px", alignItems: "start" }}>
+        <ScrollReveal delayMs={150}>
+          <footer style={{ borderTop: "1px solid rgba(24, 22, 22, 0.1)", paddingTop: "48px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "40px", alignItems: "start" }}>
           
           {/* Left Column: Brand logo & Copyright */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -139,38 +143,23 @@ export function CtaFooterSection() {
               <span>IdentityGraph</span>
             </Link>
 
-            <p style={{ fontSize: "0.85rem", color: "#78716c", lineHeight: 1.5 }}>
-              © 2026 IdentityGraph. Built with Next.js & Supabase.
+            <p style={{ fontSize: "0.85rem", color: "#78716c", lineHeight: 1.5, paddingLeft: "34px" }}>
+              © 2026 IdentityGraph.
             </p>
-
-            <div style={{ display: "flex", gap: "10px", fontSize: "0.72rem", fontFamily: "var(--font-mono)", color: "#a8a29e" }}>
-              <span>PORT: 3001</span>
-              <span>•</span>
-              <span>mcp stdio</span>
-              <span>•</span>
-              <span>supabase client</span>
-            </div>
           </div>
 
           {/* Right Link Columns Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }}>
+          <div style={{ display: "flex", gap: "48px", justifyContent: "flex-end", textAlign: "right" }}>
             {/* Column 1: Product */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-end" }}>
               <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616", textTransform: "uppercase", letterSpacing: "0.05em" }}>Product</div>
               <Link href="/dashboard" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Dashboard</Link>
-              <Link href="/login" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Sign In</Link>
-              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Live Demo</Link>
+              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Example Portfolio</Link>
+              <Link href="/login" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Get Started</Link>
             </div>
 
-            {/* Column 2: Resources */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616", textTransform: "uppercase", letterSpacing: "0.05em" }}>Resources</div>
-              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>MCP Docs</Link>
-              <Link href="/demo" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Schema Spec</Link>
-            </div>
-
-            {/* Column 3: Connect */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {/* Column 2: Connect */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-end" }}>
               <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#181616", textTransform: "uppercase", letterSpacing: "0.05em" }}>Connect</div>
               <a href="https://github.com" target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>GitHub ↗</a>
               <a href="https://twitter.com" target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem", color: "#78716c", textDecoration: "none" }}>Twitter ↗</a>
@@ -178,6 +167,7 @@ export function CtaFooterSection() {
           </div>
 
         </footer>
+        </ScrollReveal>
 
       </div>
     </section>

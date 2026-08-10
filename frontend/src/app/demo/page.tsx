@@ -367,7 +367,7 @@ export default function DemoPage() {
       {/* Footer */}
       <footer style={{ borderTop: "1px solid rgba(24, 22, 22, 0.08)", padding: "24px 32px" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", fontSize: "0.85rem", color: "#78716c", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-          <p>© 2026 IdentityGraph. Built with Next.js & Supabase.</p>
+          <p>© 2026 IdentityGraph.</p>
           <Link href="/" style={{ color: "#181616", textDecoration: "none", fontWeight: 600 }}>Back to Landing Page</Link>
         </div>
       </footer>

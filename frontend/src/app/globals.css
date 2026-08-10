@@ -2,7 +2,9 @@
 @import "../styles/theme.css";
 
 /* ---------- Reset ---------- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -35,7 +37,7 @@ body::before {
   bottom: 0;
   pointer-events: none;
   z-index: 0;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(24, 22, 22, 0.045) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(24, 22, 22, 0.045) 1px, transparent 1px);
   background-size: 36px 36px;
@@ -44,7 +46,12 @@ body::before {
 }
 
 /* ---------- Typography ---------- */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--color-text);
   font-family: var(--font-title);
   font-weight: 600;
@@ -55,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
 /* ---------- Cream Grid Background & Hero Utilities ---------- */
 .bg-cream-grid {
   background-color: #fbf9f4;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(24, 22, 22, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(24, 22, 22, 0.04) 1px, transparent 1px);
   background-size: 36px 36px;
@@ -70,18 +77,19 @@ h1, h2, h3, h4, h5, h6 {
   transform: rotate(-0.5deg);
 }
 
-.btn-yellow-pill {
+.btn-yellow-pill,
+.btn-white-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 32px;
+  padding: 14px 28px;
   background: #fed743;
   color: #181616;
   border: 2px solid #181616;
   border-radius: 9999px;
   font-family: var(--font-title);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
   text-decoration: none;
@@ -90,22 +98,45 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0px 0px 0px #181616;
 }
 
-.btn-yellow-pill:hover {
+.btn-white-pill {
+  background: #ffffff;
+}
+
+.btn-yellow-pill:hover,
+.btn-white-pill:hover {
   transform: translate(-3px, -3px);
   box-shadow: 5px 5px 0px #181616;
 }
 
+/* Bento Card Hover Transition */
+.bento-card-hover {
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1), border-color 250ms ease;
+}
+
+.bento-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  border-color: #d6d3c9;
+}
+
 /* Keyframes for swipe-up animation loop */
 @keyframes swipeUpLoop {
-  0%, 26% {
+
+  0%,
+  26% {
     transform: translateY(0%);
   }
-  33%, 59% {
+
+  33%,
+  59% {
     transform: translateY(-33.333%);
   }
-  66%, 92% {
+
+  66%,
+  92% {
     transform: translateY(-66.666%);
   }
+
   100% {
     transform: translateY(0%);
   }
@@ -116,10 +147,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulseDot {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.35;
     transform: scale(0.85);
@@ -212,7 +246,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---------- Scrollbar ---------- */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-border-focus); }
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-focus);
+}
