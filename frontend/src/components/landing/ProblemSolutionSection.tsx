@@ -4,8 +4,8 @@ import Link from "next/link";
 
 export function ProblemSolutionSection() {
   return (
-    <section style={{ width: "100%", padding: "40px 32px 100px 32px" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "40px" }}>
+    <section style={{ width: "100%" }}>
+      <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "40px 32px 100px 32px", display: "flex", flexDirection: "column", gap: "40px" }}>
         
         {/* Top Split Header */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "32px", alignItems: "start" }}>
@@ -18,14 +18,6 @@ export function ProblemSolutionSection() {
             <p style={{ fontSize: "1.05rem", color: "#57534e", lineHeight: 1.6 }}>
               Let's face it, general-purpose LLMs aren't aware of your real-time career achievements. IdentityGraph exposes a standardized, verified schema directly to your local AI tools (Cursor, Claude, ChatGPT), eliminating hallucinated stats and tedious copy-pasting.
             </p>
-            <div>
-              <a href="#features" className="btn-pill" style={{ padding: "8px 18px", fontSize: "0.8rem" }}>
-                <span>Learn more</span>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                  <polygon points="2,1 9,5 2,9" />
-                </svg>
-              </a>
-            </div>
           </div>
         </div>
 
@@ -112,7 +104,7 @@ export function ProblemSolutionSection() {
               {/* Visual Preview for Portfolio Share Link */}
               <div style={{ background: "#fbf9f4", padding: "16px", borderRadius: "12px", border: "1px solid #ece9df", display: "flex", flexDirection: "column", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#ffffff", padding: "8px 12px", borderRadius: "8px", border: "1px solid #e7e4dc" }}>
-                  <span style={{ fontSize: "0.8rem", color: "#78716c", fontFamily: "var(--font-mono)" }}>🌐</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                   <span style={{ fontSize: "0.78rem", fontWeight: 700, fontFamily: "var(--font-mono)", color: "#181616" }}>identitygraph.com/portfolio/johndoe</span>
                 </div>
                 <div style={{ display: "flex", gap: "8px" }}>
@@ -144,11 +136,11 @@ export function ProblemSolutionSection() {
 
               {/* Visual Logic Drag Blocks */}
               <div style={{ background: "#fbf9f4", padding: "16px", borderRadius: "12px", border: "1px solid #ece9df", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#fff", border: "1.5px solid #181616", padding: "6px 12px", borderRadius: "8px", color: "#181616" }}>👤 Audience</span>
+                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#fff", border: "1.5px solid #181616", padding: "6px 12px", borderRadius: "8px", color: "#181616" }}>Audience</span>
                 <span style={{ fontSize: "1rem", fontWeight: 800, color: "#a8a29e" }}>+</span>
-                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#fed743", border: "1.5px solid #181616", padding: "6px 12px", borderRadius: "8px", color: "#181616" }}>⚡ Tech Stack</span>
+                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#fed743", border: "1.5px solid #181616", padding: "6px 12px", borderRadius: "8px", color: "#181616" }}>Tech Stack</span>
                 <span style={{ fontSize: "1rem", fontWeight: 800, color: "#a8a29e" }}>+</span>
-                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#d1fae5", border: "1.5px solid #065f46", padding: "6px 12px", borderRadius: "8px", color: "#065f46" }}>📈 Metrics</span>
+                <span style={{ fontSize: "0.78rem", fontWeight: 700, background: "#d1fae5", border: "1.5px solid #065f46", padding: "6px 12px", borderRadius: "8px", color: "#065f46" }}>Metrics</span>
               </div>
             </div>
 
@@ -213,10 +205,6 @@ export function ProblemSolutionSection() {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
                   <polygon points="2,1 9,5 2,9" />
                 </svg>
-              </Link>
-              <Link href="/demo" className="btn-login-link" style={{ fontSize: "0.85rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <span>Read MCP docs</span>
-                <span style={{ fontSize: "0.75rem" }}>▶</span>
               </Link>
             </div>
           </div>

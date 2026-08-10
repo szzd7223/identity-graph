@@ -16,8 +16,8 @@ export function CtaFooterSection() {
   }, []);
 
   return (
-    <section style={{ width: "100%", padding: "60px 32px 40px 32px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "80px" }}>
+    <section style={{ width: "100%", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "60px 32px 40px 32px", display: "flex", flexDirection: "column", gap: "80px" }}>
         
         {/* CTA Banner Card: Ready to level up? */}
         <div style={{ 
