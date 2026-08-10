@@ -17,14 +17,6 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const TAB_TITLES: Record<DashboardTab, string> = {
-  overview: "General Details & Bio",
-  experiences: "Professional Experiences",
-  education: "Education History",
-  projects: "Projects & Side Pursuits",
-  skills: "Skills & Competencies",
-};
-
 export default function DashboardPage({ searchParams }: PageProps) {
   use(searchParams);
   const router = useRouter();
@@ -66,26 +58,47 @@ export default function DashboardPage({ searchParams }: PageProps) {
           onTabChange={handleTabChange}
           onSignOut={signOut}
         >
-          {/* Main Content Workspace Area */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e7e4dc", paddingBottom: "16px" }}>
+          {/* Main Continuous Form Workspace */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+            
+            {/* Header & Status Bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1.5px solid #e7e4dc", paddingBottom: "14px" }}>
               <div>
-                <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#181616" }}>
-                  {TAB_TITLES[activeTab]}
+                <h1 style={{ fontSize: "1.35rem", fontWeight: 800, color: "#181616" }}>
+                  Profile Builder & Data Substrate
                 </h1>
                 <p style={{ color: "#78716c", fontSize: "0.85rem", marginTop: "4px", lineHeight: 1.5 }}>
-                  Manage the verified data that feeds directly into your public web portfolio and AI MCP client.
+                  Edit your verified career details below. Changes are saved and synchronized automatically with your public portfolio and AI tools.
                 </p>
               </div>
               <StatusBar statusMessage={statusMessage} error={error} onDismissError={() => setError(null)} />
             </div>
 
-            {/* Active Tab Component */}
-            {activeTab === "overview" && <OverviewTab profile={profile} username={username} onSaved={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("experiences")} />}
-            {activeTab === "experiences" && <ExperiencesTab experiences={profile.experiences} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("education")} />}
-            {activeTab === "education" && <EducationTab education={profile.education} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("projects")} />}
-            {activeTab === "projects" && <ProjectsTab projects={profile.projects} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} onNext={() => setActiveTab("skills")} />}
-            {activeTab === "skills" && <SkillsTab skills={profile.skills} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />}
+            {/* Section 1: Overview & Bio */}
+            <div id="section-overview" style={{ scrollMarginTop: "130px" }}>
+              <OverviewTab profile={profile} username={username} onSaved={fetchProfile} showStatus={showStatus} setError={setError} />
+            </div>
+
+            {/* Section 2: Experience */}
+            <div id="section-experiences" style={{ scrollMarginTop: "130px" }}>
+              <ExperiencesTab experiences={profile.experiences} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />
+            </div>
+
+            {/* Section 3: Education */}
+            <div id="section-education" style={{ scrollMarginTop: "130px" }}>
+              <EducationTab education={profile.education} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />
+            </div>
+
+            {/* Section 4: Projects */}
+            <div id="section-projects" style={{ scrollMarginTop: "130px" }}>
+              <ProjectsTab projects={profile.projects} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />
+            </div>
+
+            {/* Section 5: Skills */}
+            <div id="section-skills" style={{ scrollMarginTop: "130px" }}>
+              <SkillsTab skills={profile.skills} username={username} onMutated={fetchProfile} showStatus={showStatus} setError={setError} />
+            </div>
+
           </div>
         </DashboardSkeleton>
       ) : null}

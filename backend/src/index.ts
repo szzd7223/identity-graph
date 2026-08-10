@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import profileRoutes from "./routes/profileRoutes.js";
+import mcpRoutes from "./routes/mcpRoutes.js";
 
 dotenv.config();
 
@@ -16,14 +17,18 @@ app.get("/health", (req, res) => {
   res.json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    message: "IdentityGraph API is operational"
+    message: "IdentityGraph API & Open MCP Server are operational"
   });
 });
 
-// Register API Routes
+// Register API Routes & Open MCP Endpoints
 app.use("/api", profileRoutes);
+app.use("/api", mcpRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Backend server is running on http://localhost:${PORT}`);
+  console.log(`Backend server & Open MCP Server running on http://localhost:${PORT}`);
+  console.log(`  - Open SSE Endpoint: http://localhost:${PORT}/api/mcp/sse`);
+  console.log(`  - Open REST JSON-RPC Endpoint: http://localhost:${PORT}/api/mcp`);
 });
+
 export default app;

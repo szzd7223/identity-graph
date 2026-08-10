@@ -26,12 +26,25 @@ export function DashboardSkeleton({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const portfolioUrl = `http://localhost:3000/portfolio/${username}`;
-  const mcpCommand = `npx @identitygraph/mcp-server --username ${username}`;
-  const chatGptContext = `[IDENTITYGRAPH CONTEXT: ${username.toUpperCase()}]
+  const rawDataUrl = `http://localhost:3000/portfolio/${username}/rawdata`;
+  const mcpSseUrl = `http://localhost:3001/api/mcp/sse`;
+  const mcpSseConfig = JSON.stringify({
+    servers: {
+      "identity-graph": {
+        type: "sse",
+        url: mcpSseUrl
+      }
+    }
+  }, null, 2);
+  const chatGptContext = `Remember these profile details
+
 Name: ${profile.fullName || username}
+
 Title: ${profile.title || "Builder"}
+
 Bio: ${profile.bio || "No bio set yet"}
-Portfolio: ${portfolioUrl}`;
+
+Portfolio Data Endpoint (JSON): ${rawDataUrl}`;
 
   const copyToClipboard = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -39,12 +52,12 @@ Portfolio: ${portfolioUrl}`;
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const navItems: { id: DashboardTab; label: string; icon: string }[] = [
-    { id: "overview", label: "Overview & Bio", icon: "👤" },
-    { id: "experiences", label: "Experience", icon: "💼" },
-    { id: "education", label: "Education", icon: "🎓" },
-    { id: "projects", label: "Projects & Pursuits", icon: "⚡" },
-    { id: "skills", label: "Skills & Competencies", icon: "📈" },
+  const navItems: { id: DashboardTab; label: string }[] = [
+    { id: "overview", label: "Overview & Bio" },
+    { id: "experiences", label: "Experience" },
+    { id: "education", label: "Education" },
+    { id: "projects", label: "Projects & Pursuits" },
+    { id: "skills", label: "Skills & Competencies" },
   ];
 
   return (
@@ -67,12 +80,6 @@ Portfolio: ${portfolioUrl}`;
               </svg>
               <span>IdentityGraph Studio</span>
             </Link>
-
-            {/* Status Pill */}
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#ecfdf5", border: "1px solid #6ee7b7", padding: "3px 10px", borderRadius: "9999px", fontSize: "0.75rem", color: "#047857", fontWeight: 700, fontFamily: "var(--font-mono)" }}>
-              <span className="animate-pulse-dot" style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
-              <span>MCP & API SYNCED</span>
-            </div>
           </div>
 
           {/* Action Links */}
@@ -92,40 +99,35 @@ Portfolio: ${portfolioUrl}`;
 
       {/* Main 2-Column Studio Container */}
       <main style={{ flex: 1, maxWidth: "1280px", width: "100%", margin: "0 auto", padding: "36px 32px 80px 32px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "32px", alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "32px", alignItems: "start" }}>
           
           {/* LEFT COLUMN: Identity Control Center */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "340px", width: "100%" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px", width: "100%" }}>
             
             {/* 1. Profile Identity Badge Card */}
-            <div style={{ background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "20px", padding: "24px", display: "flex", gap: "16px", alignItems: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.01)" }}>
-              <div style={{ width: "52px", height: "52px", borderRadius: "14px", background: "#181616", color: "#fed743", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.3rem" }}>
-                {(profile.fullName || username).charAt(0).toUpperCase()}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "2px", overflow: "hidden" }}>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#181616", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {profile.fullName || username}
-                </h3>
-                <span style={{ fontSize: "0.78rem", fontFamily: "var(--font-mono)", color: "#78716c" }}>
-                  @{username}
-                </span>
-                <span style={{ fontSize: "0.82rem", color: "#57534e", fontWeight: 600, marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {profile.title || "Builder & Developer"}
-                </span>
-              </div>
+            <div style={{ background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", gap: "4px", boxShadow: "0 2px 10px rgba(0,0,0,0.01)" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#181616", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {profile.fullName || username}
+              </h3>
+              <span style={{ fontSize: "0.78rem", fontFamily: "var(--font-mono)", color: "#78716c" }}>
+                @{username}
+              </span>
+              <span style={{ fontSize: "0.85rem", color: "#57534e", fontWeight: 600, marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {profile.title || "Builder & Developer"}
+              </span>
             </div>
 
-            {/* 2. Graph Completion Score Card */}
+            {/* 2. Completion Score Card */}
             <div style={{ background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "20px", padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.82rem", fontWeight: 700 }}>
-                <span style={{ color: "#181616" }}>Graph Completion</span>
+                <span style={{ color: "#181616" }}>Profile Completion</span>
                 <span style={{ color: "#047857", fontFamily: "var(--font-mono)" }}>85% Complete</span>
               </div>
               <div style={{ width: "100%", height: "8px", background: "#f0eee6", borderRadius: "9999px", overflow: "hidden" }}>
                 <div style={{ width: "85%", height: "100%", background: "#fed743", borderRadius: "9999px" }} />
               </div>
               <div style={{ fontSize: "0.78rem", color: "#78716c" }}>
-                💡 Tip: Add 1 more project to hit 100% identity accuracy.
+                Tip: Add 1 more project to hit 100% identity accuracy.
               </div>
             </div>
 
@@ -140,17 +142,15 @@ Portfolio: ${portfolioUrl}`;
                 className="btn-secondary"
                 style={{ width: "100%", justifyContent: "flex-start", padding: "10px 14px", fontSize: "0.82rem", borderRadius: "10px" }}
               >
-                <span>📋</span>
-                <span>{copiedKey === "chatgpt" ? "Copied to Clipboard!" : "Copy ChatGPT Context"}</span>
+                <span>{copiedKey === "chatgpt" ? "Copied Prompt!" : "Copy AI Context Prompt"}</span>
               </button>
 
               <button 
-                onClick={() => copyToClipboard(mcpCommand, "mcp")}
+                onClick={() => copyToClipboard(mcpSseConfig, "mcp")}
                 className="btn-secondary"
                 style={{ width: "100%", justifyContent: "flex-start", padding: "10px 14px", fontSize: "0.82rem", borderRadius: "10px" }}
               >
-                <span>⚡</span>
-                <span>{copiedKey === "mcp" ? "Copied Stdio Command!" : "Copy MCP Stdio Cmd"}</span>
+                <span>{copiedKey === "mcp" ? "Copied MCP Config!" : "Copy MCP Server Config"}</span>
               </button>
 
               <button 
@@ -158,59 +158,72 @@ Portfolio: ${portfolioUrl}`;
                 className="btn-secondary"
                 style={{ width: "100%", justifyContent: "flex-start", padding: "10px 14px", fontSize: "0.82rem", borderRadius: "10px" }}
               >
-                <span>🌐</span>
                 <span>{copiedKey === "url" ? "Copied Portfolio URL!" : "Copy Portfolio Link"}</span>
               </button>
             </div>
 
-            {/* 4. Sidebar Navigation Tabs */}
-            <div style={{ background: "#ffffff", border: "1.5px solid #e7e4dc", borderRadius: "20px", padding: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
+          </div>
+
+          {/* RIGHT COLUMN: Unified Single Card Builder Workspace Container */}
+          <div style={{ 
+            background: "#ffffff", 
+            border: "1.5px solid #e7e4dc", 
+            borderRadius: "24px", 
+            padding: "32px", 
+            display: "flex",
+            flexDirection: "column",
+            gap: "28px",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.015)",
+            width: "100%"
+          }}>
+            {/* Sticky Top Horizontal Workspace Navigation Tabs */}
+            <div style={{ 
+              position: "sticky",
+              top: "70px",
+              zIndex: 10,
+              background: "#ffffff",
+              paddingTop: "6px",
+              paddingBottom: "18px",
+              borderBottom: "1.5px solid #e7e4dc",
+              display: "flex", 
+              alignItems: "center", 
+              gap: "10px", 
+              overflowX: "auto",
+              scrollbarWidth: "none"
+            }}>
               {navItems.map((item) => {
                 const isActive = activeTab === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onTabChange(item.id)}
+                    onClick={() => {
+                      onTabChange(item.id);
+                      const el = document.getElementById(`section-${item.id}`);
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      padding: "12px 16px",
-                      borderRadius: "12px",
-                      border: isActive ? "1.5px solid #181616" : "1.5px solid transparent",
-                      background: isActive ? "#181616" : "transparent",
+                      padding: "8px 18px",
+                      borderRadius: "100px",
+                      border: isActive ? "1.5px solid #181616" : "1.5px solid #e7e4dc",
+                      background: isActive ? "#181616" : "#ffffff",
                       color: isActive ? "#ffffff" : "#57534e",
                       fontWeight: isActive ? 700 : 600,
-                      fontSize: "0.9rem",
+                      fontSize: "0.86rem",
                       cursor: "pointer",
-                      textAlign: "left",
+                      whiteSpace: "nowrap",
                       transition: "all 0.15s ease",
-                      boxShadow: isActive ? "3px 3px 0px #fed743" : "none"
+                      boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.08)" : "none"
                     }}
                   >
-                    <span style={{ fontSize: "1rem" }}>{item.icon}</span>
-                    <span>{item.label}</span>
+                    {item.label}
                   </button>
                 );
               })}
             </div>
 
-          </div>
-
-          {/* RIGHT COLUMN: Builder Workspace Container Skeleton */}
-          <div style={{ 
-            background: "#ffffff", 
-            border: "1.5px solid #e7e4dc", 
-            borderRadius: "24px", 
-            padding: "36px", 
-            minHeight: "560px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "28px",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.015)",
-            flex: 1
-          }}>
-            {/* Render Tab Form Component Children */}
+            {/* Render Tab Components Inside The Unified Workspace Card */}
             {children}
           </div>
 

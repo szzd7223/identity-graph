@@ -1,3 +1,11 @@
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
 import { McpServer } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
@@ -207,6 +215,9 @@ server.registerTool(
         content: [{ type: "text", text: `Error generating formatted resume: ${error.message}` }],
       };
     }
+  }
+);
+
 // Connect using standard I/O (stdio) transport
 const transport = new StdioServerTransport();
 await server.connect(transport);
