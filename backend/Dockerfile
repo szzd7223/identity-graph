@@ -3,7 +3,7 @@
 # ==========================================
 # Stage 1: Build stage
 # ==========================================
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install all dependencies (including devDependencies for Prisma & TypeScript)
-RUN npm ci
+RUN npm install
 
 # Copy TypeScript config and source code
 COPY tsconfig.json ./
@@ -28,7 +28,7 @@ RUN npm prune --production
 # ==========================================
 # Stage 2: Production runtime stage
 # ==========================================
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
